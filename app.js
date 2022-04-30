@@ -152,6 +152,8 @@ function _addListeners(){
 		false
 	);
 	interval = setInterval(UpdatePosition, 100);
+	interval_ghosts = setInterval(_UpdateGhosts, 1000);
+
 }
 //return a random 2 dim array
 function findRandomEmptyCell(board) {
@@ -254,7 +256,9 @@ function UpdatePosition() {
 	}
 }
 
-
+function _UpdateGhosts(){
+	
+}
 
 //Draw functions:
 
@@ -406,25 +410,7 @@ function _createBoard(){
 		food_remain--;
 	}
 }
-//add key listeners
-function _addListeners(){
-	keysDown = {};
-	addEventListener(
-		"keydown",
-		function(e) {
-			keysDown[e.keyCode] = true;
-		},
-		false
-	);
-	addEventListener(
-		"keyup",
-		function(e) {
-			keysDown[e.keyCode] = false;
-		},
-		false
-	);
-	interval = setInterval(UpdatePosition, 100);
-}
+
 function _onRegisterSubmit(form) {
 
 	if(!_isAllRegisterFieldsFilled()){
