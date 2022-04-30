@@ -35,12 +35,14 @@ var settings={
 	leftKey:37,
 	rightKey:39,
 	numberOfFoods:50,
-	foodColor5:'red',
-	foodColor15:'blue',
+	foodColor5:'blue',
+	foodColor15:'yellow',
 	foodColor25:'green',
 	gameTime:60,
 	numberOfMonsters:4
 }
+afterClickColor ='#2A2550'
+
 
 
 $(document).ready(function() {
@@ -459,35 +461,97 @@ function _logIn(f){
 	}
 	return false
 }
-function goUpDef(){
+function _goUpDef(){
 	if(buttonSelected){
 		return
 	}
 	buttonSelected=true
 	let btn=$('#go-up-btn')
 	btn.html('press any key to define up key')
-	// $('#go-up-btn').disable()
 	btn.css("background-color",'#B22727');
 	document.addEventListener('keydown', function(event) {
 		btn.html('Go Up')
-		btn.css("background-color",'#028498');
+		btn.css("background-color",afterClickColor);
 		settings.upKey=event.keyCode 
 		buttonSelected=false
 	});
 }
-function goDownDef(){
+function _goDownDef(){
 	if(buttonSelected){
 		return
 	}
 	buttonSelected=true
 	let btn=$('#go-down-btn')
-	btn.html('press any key to define up key')
-	// $('#go-up-btn').disable()
+	btn.html('press any key to define down key')
 	btn.css("background-color",'#B22727');
 	document.addEventListener('keydown', function(event) {
 		btn.html('Go Down')
-		btn.css("background-color",'#028498');
-		settings.upKey=event.keyCode 
+		btn.css("background-color",afterClickColor);
+		settings.downKey=event.keyCode 
 		buttonSelected=false
 	});
+}
+function _goLeftDef(){
+	if(buttonSelected){
+		return
+	}
+	buttonSelected=true
+	let btn=$('#go-left-btn')
+	btn.html('press any key to define left key')
+	btn.css("background-color",'#B22727');
+	document.addEventListener('keydown', function(event) {
+		btn.html('Go Left')
+		btn.css("background-color",afterClickColor);
+		settings.leftKey=event.keyCode 
+		buttonSelected=false
+	});
+}
+function _goRightDef(){
+	if(buttonSelected){
+		return
+	}
+	buttonSelected=true
+	let btn=$('#go-right-btn')
+	btn.html('press any key to define left key')
+	btn.css("background-color",'#B22727');
+	document.addEventListener('keydown', function(event) {
+		btn.html('Go Right')
+		btn.css("background-color",afterClickColor);
+		settings.rightKey=event.keyCode 
+		buttonSelected=false
+	});
+}
+function on5pColorChange(val){
+	settings.foodColor5=val
+}
+function on15pColorChange(val){
+	settings.foodColor15=val
+}
+function on25pColorChange(val){
+	settings.foodColor25=val
+}
+function onGameTimeChange(val){
+	if(val<60){
+		alert('Game time should be at least 60');
+		$('#game-time-input').val(60)
+	}
+	else{
+		settings.gameTime=parseInt(val)
+	}
+	
+}
+function onFoodPointsChange(val){
+
+	if(val<50){
+		alert('Number of food points should be between 50 and 90,number is below 50');
+		$('food-points-input').val(50);``
+	}
+	else if(val>90){
+		alert('Number of food points should be between 50 and 90,number is above 90');
+		$('food-points-input').val(90);
+	}
+	else{
+		settings.food_remain=parseInt(val)
+	}
+	
 }
