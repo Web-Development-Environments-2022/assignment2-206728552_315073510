@@ -46,7 +46,7 @@ var settings={
 $(document).ready(function() {
 	context = canvas.getContext("2d");
 	Start();
-	_setScreen('game')
+	_setScreen('settings')
 });
 function Start() {
 	ghosts = [];
