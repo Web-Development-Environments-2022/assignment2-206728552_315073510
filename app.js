@@ -480,16 +480,16 @@ function _asciiToChar(n){
 	}
 }
 function _arrowToChar(n) {
-	if (n) {//up
+	if (n==38) {//up
 		return '&#x2191;';
 	}
-	if (n) {//down
+	if (n==40) {//down
 		return '&#x2193;';
 	}
-	if (n) {//left
+	if (n==37) {//left
 		return '&#x2190;';
 	}
-	if (n) {//right
+	if (n==39) {//right
 		return '&#x2192;';
 	}
 }
@@ -571,13 +571,17 @@ function _goUpDef(){
 	let btn=$('#go-up-btn')
 	btn.html('press any key to define up key')
 	btn.css("background-color",'#B22727');
-	document.addEventListener('keydown', function(event) {
+	foo= function(event) {
 		btn.html('Go Up')
 		btn.css("background-color",afterClickColor);
 		settings.upKey=event.keyCode 
 		buttonSelected=false
-	});
-	_setDisplayedSettings()
+		removeEventListener('keydown',foo)
+		_setDisplayedSettings()
+	}
+	addEventListener('keydown',foo);
+
+
 }
 function _goDownDef(){
 	if(buttonSelected){
@@ -587,12 +591,15 @@ function _goDownDef(){
 	let btn=$('#go-down-btn')
 	btn.html('press any key to define down key')
 	btn.css("background-color",'#B22727');
-	document.addEventListener('keydown', function(event) {
+	foo=function(event) {
 		btn.html('Go Down')
 		btn.css("background-color",afterClickColor);
 		settings.downKey=event.keyCode 
 		buttonSelected=false
-	});
+		removeEventListener('keydown',foo)
+		_setDisplayedSettings()
+	}
+	addEventListener('keydown', foo);
 }
 function _goLeftDef(){
 	if(buttonSelected){
@@ -602,13 +609,16 @@ function _goLeftDef(){
 	let btn=$('#go-left-btn')
 	btn.html('press any key to define left key')
 	btn.css("background-color",'#B22727');
-	document.addEventListener('keydown', function(event) {
+	foo=function(event) {
 		btn.html('Go Left')
 		btn.css("background-color",afterClickColor);
 		settings.leftKey=event.keyCode 
 		buttonSelected=false
-	});
-	_setDisplayedSettings()
+		removeEventListener('keydown',foo)
+		_setDisplayedSettings()
+	}
+	addEventListener('keydown',foo );
+
 }
 function _goRightDef(){
 	if(buttonSelected){
@@ -618,13 +628,16 @@ function _goRightDef(){
 	let btn=$('#go-right-btn')
 	btn.html('press any key to define left key')
 	btn.css("background-color",'#B22727');
-	document.addEventListener('keydown', function(event) {
+	foo=function(event) {
 		btn.html('Go Right')
 		btn.css("background-color",afterClickColor);
 		settings.rightKey=event.keyCode 
 		buttonSelected=false
-	});
-	_setDisplayedSettings()
+		removeEventListener('keydown',foo)
+		_setDisplayedSettings()
+	}
+	addEventListener('keydown',foo );
+
 }
 function on5pColorChange(val){
 	settings.foodColor5=val
@@ -666,6 +679,18 @@ function onFoodPointsChange(val){
 	
 }
 function _setDisplayedSettings(){
-	let status='up:'+_asciiToChar(settings.upKey);
+	let status=
+	
+	'<div style="margin-bottom:8px;"> Left: '+_asciiToChar(settings.leftKey)+'</div>'+
+	'<div style="margin-bottom:8px;"> up: '+_asciiToChar(settings.upKey)+'</div>'+
+	'<div style="margin-bottom:8px;"> Down: '+_asciiToChar(settings.downKey)+'</div>'+
+	'<div style="margin-bottom:8px;"> Right: '+_asciiToChar(settings.rightKey)+'</div>'
+
+	// status='<div>aa</div>'
 	$('#status-div').html(status )
+	$('#status-div').css('font-family','sans-serif')
+	$('#status-div').css('text-align','center')
+}
+function startGame(){
+	_setScreen('game')
 }
