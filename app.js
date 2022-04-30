@@ -257,7 +257,20 @@ function UpdatePosition() {
 }
 
 function _UpdateGhosts(){
-	
+	ghost = ghosts[0];
+	if(board[ghost.i+1][ghost.j] == 2){
+		_eat_pacmen();
+	}
+	console.log(ghost);
+	val = ghost.prev_val;
+	ghost.prev_val = board[ghost.i+1][ghost.j]
+	ghost.i ++;
+	board[ghost.i][ghost.j] = 3;
+	board[ghost.i-1][ghost.j] = val;
+
+	if (board[ghost.i][ghost.j] == 2) {
+		console.log("ghost for the winnnnnnnnnnnnn");
+	}
 }
 
 //Draw functions:
