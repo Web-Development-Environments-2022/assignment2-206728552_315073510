@@ -544,7 +544,7 @@ function onFoodPointsChange(val){
 
 	if(val<50){
 		alert('Number of food points should be between 50 and 90,number is below 50');
-		$('food-points-input').val(50);``
+		$('food-points-input').val(50);
 	}
 	else if(val>90){
 		alert('Number of food points should be between 50 and 90,number is above 90');
