@@ -1,0 +1,11 @@
+#subtitle{
+    position: relative;
+    top: -15px;
+    font-family: sans-serif;
+}
+#title{
+    font-family: sans-serif;
+}
+.screen{
+    display: none;
+}

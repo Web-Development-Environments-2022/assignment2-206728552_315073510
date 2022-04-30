@@ -3,19 +3,40 @@
 	<head>
 		<script src="./jquery-3.4.1.slim.min.js"></script>
 		<script type="text/javascript" src="./app.js"></script>
+		<link rel="stylesheet" href="./styles.css">
+		<h1 id=title>Pacman</h1>
+		<span id=subtitle>Harel Moshayof:315073510 | Hadar Sabati : 206728552</span>
 	</head>
 
 	<body>
-		<div id="score">
-			<label for="lblScore">SCORE:</label>
-			<input id="lblScore" type="text" />
+		<div id="menu">
+			<div></div>
 		</div>
-		<div id="time">
-			<label for="lblTime">TIME:</label>
-			<input id="lblTime" type="text" />
+		<div id="welcome_screen" class="screen">
+			welcome_screen
 		</div>
-		<div id="game">
-			<canvas id="canvas" height="600" width="600"></canvas>
+		<div id="sign_in_screen" class="screen">
+			sign_in_screen
+		</div>
+		<div id="log_in_screen" class="screen">
+			log_in_screen
+		</div>
+		<div id="settings_screen" class="screen">
+			settings_screen
+		</div>
+
+		<div id="game_screen" class="screen">
+			<div id="score">
+				<label for="lblScore">SCORE:</label>
+				<input id="lblScore" type="text" />
+			</div>
+			<div id="time">
+				<label for="lblTime">TIME:</label>
+				<input id="lblTime" type="text" />
+			</div>
+			<div id="game">
+				<canvas id="canvas" height="600" width="600"></canvas>
+			</div>
 		</div>
 	</body>
 </html>

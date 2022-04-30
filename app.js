@@ -10,13 +10,32 @@ var interval;
 $(document).ready(function() {
 	context = canvas.getContext("2d");
 	Start();
+	_setScreen('game')
 });
-//0:blank , 1:food , 2:pacman , 3: , 4:wall
+function _setScreen(screen){
+	if(screen==='welcome'){
+
+	}
+	else if(screen==='sign_in'){
+
+	}
+	else if(screen==='log_in'){
+		
+	}
+	else if(screen==='settings'){
+		
+	}
+	else if(screen==='game'){
+		document.getElementById('game_screen').style.display='block'
+	}
+}
+
 function Start() {
 	_createBoard()
 	_addListeners()
 }
 //generate the game board
+//0:blank , 1:food , 2:pacman , 3: , 4:wall
 function _createBoard(){
 	board = new Array();
 	score = 0;
@@ -43,6 +62,7 @@ function _createBoard(){
 					food_remain--;
 					board[i][j] = 1;
 				} else if (randomNum < (1.0 * (pacman_remain + food_remain)) / cnt) {
+					//bug??
 					shape.i = i;
 					shape.j = j;
 					pacman_remain--;
@@ -168,7 +188,7 @@ function UpdatePosition() {
 	if (board[shape.i][shape.j] == 1) {
 		score++;
 	}
-	board[shape.i][shape.j] = 2;
+	board[shape.i][shape.j] = 2;//neww place
 	var currentTime = new Date();
 	time_elapsed = (currentTime - start_time) / 1000;
 	if (score >= 20 && time_elapsed <= 10) {
