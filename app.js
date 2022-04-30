@@ -6,7 +6,6 @@ var pac_color;
 var start_time;
 var time_elapsed;
 var interval;
-ghost_num = 4;
 var turn = 'R' //'R': right, 'L': left, 'U': up, 'D': down
 //register
 var registerForm={
@@ -16,6 +15,7 @@ var registerForm={
 	email:undefined,
 	dateOfBirth:undefined,
 }
+
 var username;
 var password
 var name;
@@ -27,26 +27,23 @@ login={
 	password:undefined
 }
 var users=[{username:'k',password:'k',email:'k@k.com'}]
-//settings
-var buttonSelected=false
 var settings={
 	upKey:38,
 	downKey:40,
 	leftKey:37,
 	rightKey:39,
 	numberOfFoods:50,
-	foodColor5:'red',
+	foodColor5:'yellow',
 	foodColor15:'blue',
 	foodColor25:'green',
 	gameTime:60,
 	numberOfMonsters:4
 }
 
-
 $(document).ready(function() {
 	context = canvas.getContext("2d");
 	Start();
-	_setScreen('settings')
+	_setScreen('game')
 });
 function Start() {
 	ghosts = [];
@@ -54,19 +51,18 @@ function Start() {
 	ghosts[1] = {i:0, j:9, prev_val:0 };
 	ghosts[2] = {i:9, j:0, prev_val:0 };
 	ghosts[3] = {i:9, j:9, prev_val:0 };
-	ghosts = ghosts.slice(-ghost_num);
-	console.log(ghosts);
+	ghosts = ghosts.slice(-settings.numberOfMonsters);
 	_createBoard()
 	_addListeners()
 }
 //generate the game board
-//0:blank , 1:food , 2:pacman , 3: ghost, 4:wall
+//0:blank , 1: , 2:pacman , 3: ghost , 4:wall , 5:food-5 , 6: food-15 , 7:food-25
 function _createBoard(){
 	board = new Array();
 	score = 0;
 	pac_color = "yellow";
+	food_remain = settings.numberOfFoods;
 	var cnt = 100;//number of cells
-	var food_remain = 50;
 	var pacman_remain = 1;
 	start_time = new Date();
 	for (var i = 0; i < 10; i++) {
@@ -111,7 +107,15 @@ function _createBoard(){
 				var randomNum = Math.random();
 				if (randomNum <= (1.0 * food_remain) / cnt) {
 					food_remain--;
-					board[i][j] = 1;
+					var randomFood = Math.random();
+					if (randomFood <= 0.6){
+						board[i][j] = 5;
+					}else if(randomFood <= 0.9){
+						board[i][j] = 6;
+					}else{
+						board[i][j] = 7;
+					}
+					
 				} else if (randomNum < (1.0 * (pacman_remain + food_remain)) / cnt) {
 					//bug??
 					if (i <= 7 && i >= 2 && j <= 7 && j >= 2)
@@ -134,7 +138,6 @@ function _createBoard(){
 		var emptyCell = findRandomEmptyCell(board);//2 dimentional number array
 		while (emptyCell[0] > 7 || emptyCell[0] < 2 || emptyCell[1] > 7 || emptyCell[1] < 2){
 			emptyCell = findRandomEmptyCell(board);
-			console.log(emptyCell);
 		}
 		shape.i = emptyCell[0];
 		shape.j = emptyCell[1];
@@ -186,16 +189,16 @@ function findRandomEmptyCell(board) {
 //convert keydown to number 
 //1:up , 2:down , 3:left , 4:right
 function GetKeyPressed() {
-	if (keysDown[38]) {//up
+	if (keysDown[settings.upKey]) {//up
 		return 1;
 	}
-	if (keysDown[40]) {//down
+	if (keysDown[settings.downKey]) {//down
 		return 2;
 	}
-	if (keysDown[37]) {//left
+	if (keysDown[settings.leftKey]) {//left
 		return 3;
 	}
-	if (keysDown[39]) {//right
+	if (keysDown[settings.rightKey]) {//right
 		return 4;
 	}
 }
@@ -213,15 +216,26 @@ function Draw() {
 				_draw_pacman(center);
 			} else if (board[i][j] == 3) {
 				_draw_ghost(center);
-			}else if (board[i][j] == 1) {
-				context.beginPath();
-				context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
-				context.fillStyle = "black"; //color
-				context.fill();
+
 			} else if (board[i][j] == 4) {
 				context.beginPath();
 				context.rect(center.x - 30, center.y - 30, 60, 60);
 				context.fillStyle = "grey"; //color
+				context.fill();
+			}else if (board[i][j] == 5) {
+				context.beginPath();
+				context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
+				context.fillStyle = settings.foodColor5; //color
+				context.fill();
+			}else if (board[i][j] == 6) {
+				context.beginPath();
+				context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
+				context.fillStyle = settings.foodColor15; //color
+				context.fill();
+			}else if (board[i][j] == 7) {
+				context.beginPath();
+				context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
+				context.fillStyle = settings.foodColor25; //color
 				context.fill();
 			}
 		}
@@ -255,8 +269,12 @@ function UpdatePosition() {
 			turn = 'R';
 		}
 	}
-	if (board[shape.i][shape.j] == 1) {
-		score++;
+	if (board[shape.i][shape.j] == 5) {
+		score+=5;
+	}else if (board[shape.i][shape.j] == 6) {
+		score+=15;
+	}else if (board[shape.i][shape.j] == 7) {
+		score+=25;
 	}
 	board[shape.i][shape.j] = 2;//neww place
 	var currentTime = new Date();
@@ -278,7 +296,6 @@ function _UpdateGhosts(){
 	if(board[ghost.i+1][ghost.j] == 2){
 		_eat_pacmen();
 	}
-	console.log(ghost);
 	val = ghost.prev_val;
 	ghost.prev_val = board[ghost.i+1][ghost.j]
 	ghost.i ++;
@@ -292,8 +309,6 @@ function _UpdateGhosts(){
 //Draw functions:
 
 function _draw_pacman(center){
-	console.log(turn);
-
 	if (turn == 'U'){	context.beginPath();
 		context.arc(center.x, center.y, 30, 1.65 * Math.PI, 1.35 * Math.PI); // half circle
 		context.lineTo(center.x, center.y);
@@ -460,34 +475,11 @@ function _logIn(f){
 	return false
 }
 function goUpDef(){
-	if(buttonSelected){
-		return
-	}
-	buttonSelected=true
-	let btn=$('#go-up-btn')
-	btn.html('press any key to define up key')
+	$('#go-up-btn').html('press any key to define up key')
 	// $('#go-up-btn').disable()
-	btn.css("background-color",'#B22727');
+	$('#go-up-btn').css("background-color",'#B22727');
 	document.addEventListener('keydown', function(event) {
-		btn.html('Go Up')
-		btn.css("background-color",'#028498');
-		settings.upKey=event.keyCode 
-		buttonSelected=false
-	});
-}
-function goDownDef(){
-	if(buttonSelected){
-		return
-	}
-	buttonSelected=true
-	let btn=$('#go-down-btn')
-	btn.html('press any key to define up key')
-	// $('#go-up-btn').disable()
-	btn.css("background-color",'#B22727');
-	document.addEventListener('keydown', function(event) {
-		btn.html('Go Down')
-		btn.css("background-color",'#028498');
-		settings.upKey=event.keyCode 
-		buttonSelected=false
+		$('#go-up-btn').html('Go Up')
+		$('#go-up-btn').css("background-color",'#028498');
 	});
 }
