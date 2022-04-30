@@ -4,38 +4,96 @@
 		<script src="./jquery-3.4.1.slim.min.js"></script>
 		<script type="text/javascript" src="./app.js"></script>
 		<link rel="stylesheet" href="./styles.css">
-		<h1 id=title>Pacman</h1>
-		<span id=subtitle>Harel Moshayof:315073510 | Hadar Sabati : 206728552</span>
+
+		<link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+		<link rel="stylesheet" href="/resources/demos/style.css">
+		<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+		<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+
+		<div id="header" class="centered-div col">
+			<h1 id=title>PacmaniA</h1>
+			<span id=subtitle>Harel Moshayof : 315073510 | Hadar Sabati : 206728552</span>
+		</div>
 	</head>
 
 	<body>
-		<div id="menu">
-			<div></div>
+		<div id="menu" class="centered-div">
+			<button class="menu-item-btn" onclick="_setScreen('welcome')">Welcome</button>
+			<button class="menu-item-btn" onclick="_setScreen('register')">Register</button>
+			<button class="menu-item-btn"onclick="_setScreen('log_in')">Log In</button>
+			<button class="menu-item-btn"onclick="_openAboutDialog()">About</button>
 		</div>
-		<div id="welcome_screen" class="screen">
-			welcome_screen
-		</div>
-		<div id="sign_in_screen" class="screen">
-			sign_in_screen
-		</div>
-		<div id="log_in_screen" class="screen">
-			log_in_screen
-		</div>
-		<div id="settings_screen" class="screen">
-			settings_screen
-		</div>
+		<div id="screen">
+			<div id="welcome_screen" class="screen ">
+				<button class="btn yellow-bg" onclick="_setScreen('register')">Register</button>
+				<button class="btn orange-bg" onclick="_setScreen('log_in')">Log In</button>
+			</div>
+			<div id="register_screen" class="screen ">
+				<form name="registerForm"  onsubmit="return _onRegisterSubmit()" method="post">
+					<span>
+						<span class="pre-input">Username:</span>
+						<input id="reg_username" type="text" >
+					</span>
+					<span>
+						<span class="pre-input">Password:</span>
+						<input id="reg_password" type="password" >
+					</span>
+					<span>
+						<span class="pre-input">Full Name:</span>
+						<input id="reg_name" >
+					</span>
+					<span>
+						<span class="pre-input">Email:</span>
+						<input id="reg_email"  >
+					</span>
+					<span>
+						<span class="pre-input date-txt">Date Of Birth:</span>
+						<input id="reg_date" type="date" >
+					</span>
+				
+					<button type="submit" class="btn yellow-bg submit-pos">Submit</button>
+				</form>
+			</div>
+			<div id="log_in_screen" class="screen">
+				<form name="loginForm" onsubmit="return _logIn(this)" method="post">
+					<span>
+						<span class="pre-input">Username:</span>
+						<input id="login_username" type="text" >
+					</span>
+					<span>
+						<span class="pre-input">Password:</span>
+						<input id="login_password" type="password">
+					</span>
+					
+				
+					<button type="submit" class="btn yellow-bg submit-pos">Log In</button>
+				</form>
+			</div>
+			<div id="settings_screen" class="screen">
+				<button class="btn blue-bg-btn" id="go-up-btn" onclick="goUpDef()">Go Up</button>
+			</div>
+			<div id="about_dialog" title="About" class="screen " >
+				<div>--Developed by--</div>
+				<div>Harel Moshayof : 315073510</div>
+				<div>Hadar Sabati : 206728552</div>
+				<div>--jquery plug ins--</div>
+				<div>jquery-ui</div>
+				<div>--Difficulties--</div>
+				<div>settings implementation</div>
+			</div>
 
-		<div id="game_screen" class="screen">
-			<div id="score">
-				<label for="lblScore">SCORE:</label>
-				<input id="lblScore" type="text" />
-			</div>
-			<div id="time">
-				<label for="lblTime">TIME:</label>
-				<input id="lblTime" type="text" />
-			</div>
-			<div id="game">
-				<canvas id="canvas" height="600" width="600"></canvas>
+			<div id="game_screen" class="screen">
+				<div id="score">
+					<label for="lblScore">SCORE:</label>
+					<input id="lblScore" type="text" />
+				</div>
+				<div id="time">
+					<label for="lblTime">TIME:</label>
+					<input id="lblTime" type="text" />
+				</div>
+				<div id="game">
+					<canvas id="canvas" height="600" width="600"></canvas>
+				</div>
 			</div>
 		</div>
 	</body>
