@@ -11,12 +11,12 @@ $(document).ready(function() {
 	context = canvas.getContext("2d");
 	Start();
 });
-
+//0:blank , 1:food , 2:pacman , 3: , 4:wall
 function Start() {
 	board = new Array();
 	score = 0;
 	pac_color = "yellow";
-	var cnt = 100;
+	var cnt = 100;//number of cells
 	var food_remain = 50;
 	var pacman_remain = 1;
 	start_time = new Date();
@@ -49,8 +49,9 @@ function Start() {
 			}
 		}
 	}
+	//adding left food to the game
 	while (food_remain > 0) {
-		var emptyCell = findRandomEmptyCell(board);
+		var emptyCell = findRandomEmptyCell(board);//2 dimentional number array
 		board[emptyCell[0]][emptyCell[1]] = 1;
 		food_remain--;
 	}
@@ -69,7 +70,7 @@ function Start() {
 		},
 		false
 	);
-	interval = setInterval(UpdatePosition, 250);
+	interval = setInterval(UpdatePosition, 100);
 }
 
 function findRandomEmptyCell(board) {
