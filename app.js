@@ -254,6 +254,8 @@ function UpdatePosition() {
 	}
 }
 
+
+
 //Draw functions:
 
 function _draw_pacman(center){
