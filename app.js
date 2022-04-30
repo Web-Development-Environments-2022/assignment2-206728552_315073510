@@ -92,10 +92,10 @@ function _createBoard(){
 				board[i][j] = 4;
 			} 
 			else if(
-				(i == 0 && j == 0) ||
-				(i == 0 && j == 9) ||
-				(i == 9 && j == 0) ||
-				(i == 9 && j == 9) 
+				(i == ghosts[0].i && j == ghosts[0].j) ||
+				(i == ghosts[1].i && j == ghosts[1].j) ||
+				(i == ghosts[2].i && j == ghosts[2].j) ||
+				(i == ghosts[3].i && j == ghosts[3].j) 
 			){
 				board[i][j] = 3;
 			}else {
@@ -383,53 +383,6 @@ function _openAboutDialog(){
 		// $( "#about_dialog" ).style.display='flex';
 		$( "#about_dialog" ).dialog();
 	  } );
-}
-//generate the game board
-//0:blank , 1:food , 2:pacman , 3: , 4:wall
-function _createBoard(){
-	board = new Array();
-	score = 0;
-	pac_color = "yellow";
-	var cnt = 100;//number of cells
-	var food_remain = 50;
-	var pacman_remain = 1;
-	start_time = new Date();
-	for (var i = 0; i < 10; i++) {
-		board[i] = new Array();
-		//put obstacles in (i=3,j=3) and (i=3,j=4) and (i=3,j=5), (i=6,j=1) and (i=6,j=2)
-		for (var j = 0; j < 10; j++) {
-			if (
-				(i == 3 && j == 3) ||
-				(i == 3 && j == 4) ||
-				(i == 3 && j == 5) ||
-				(i == 6 && j == 1) ||
-				(i == 6 && j == 2)
-			) {
-				board[i][j] = 4;
-			} else {
-				var randomNum = Math.random();
-				if (randomNum <= (1.0 * food_remain) / cnt) {
-					food_remain--;
-					board[i][j] = 1;
-				} else if (randomNum < (1.0 * (pacman_remain + food_remain)) / cnt) {
-					//bug??
-					shape.i = i;
-					shape.j = j;
-					pacman_remain--;
-					board[i][j] = 2;
-				} else {
-					board[i][j] = 0;
-				}
-				cnt--;
-			}
-		}
-	}
-	//adding left food to the game
-	while (food_remain > 0) {
-		var emptyCell = findRandomEmptyCell(board);//2 dimentional number array
-		board[emptyCell[0]][emptyCell[1]] = 1;
-		food_remain--;
-	}
 }
 
 function _onRegisterSubmit(form) {
