@@ -13,6 +13,11 @@ $(document).ready(function() {
 });
 //0:blank , 1:food , 2:pacman , 3: , 4:wall
 function Start() {
+	_createBoard()
+	_addListeners()
+}
+//generate the game board
+function _createBoard(){
 	board = new Array();
 	score = 0;
 	pac_color = "yellow";
@@ -55,6 +60,9 @@ function Start() {
 		board[emptyCell[0]][emptyCell[1]] = 1;
 		food_remain--;
 	}
+}
+//add key listeners
+function _addListeners(){
 	keysDown = {};
 	addEventListener(
 		"keydown",
@@ -72,8 +80,9 @@ function Start() {
 	);
 	interval = setInterval(UpdatePosition, 100);
 }
-
+//return a random 2 dim array
 function findRandomEmptyCell(board) {
+	
 	var i = Math.floor(Math.random() * 9 + 1);
 	var j = Math.floor(Math.random() * 9 + 1);
 	while (board[i][j] != 0) {
@@ -82,18 +91,19 @@ function findRandomEmptyCell(board) {
 	}
 	return [i, j];
 }
-
+//convert keydown to number 
+//1:up , 2:down , 3:left , 4:right
 function GetKeyPressed() {
-	if (keysDown[38]) {
+	if (keysDown[38]) {//up
 		return 1;
 	}
-	if (keysDown[40]) {
+	if (keysDown[40]) {//down
 		return 2;
 	}
-	if (keysDown[37]) {
+	if (keysDown[37]) {//left
 		return 3;
 	}
-	if (keysDown[39]) {
+	if (keysDown[39]) {//right
 		return 4;
 	}
 }
@@ -112,11 +122,11 @@ function Draw() {
 				context.arc(center.x, center.y, 30, 0.15 * Math.PI, 1.85 * Math.PI); // half circle
 				context.lineTo(center.x, center.y);
 				context.fillStyle = pac_color; //color
-				context.fill();
+				context.fill();//pacman body
 				context.beginPath();
 				context.arc(center.x + 5, center.y - 15, 5, 0, 2 * Math.PI); // circle
 				context.fillStyle = "black"; //color
-				context.fill();
+				context.fill();//pacman eye
 			} else if (board[i][j] == 1) {
 				context.beginPath();
 				context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
