@@ -275,7 +275,6 @@ function _UpdateGhosts(){
 	ghost.i ++;
 	board[ghost.i][ghost.j] = 3;
 	board[ghost.i-1][ghost.j] = val;
-
 	if (board[ghost.i][ghost.j] == 2) {
 		console.log("ghost for the winnnnnnnnnnnnn");
 	}
@@ -341,6 +340,10 @@ function _draw_ghost(center){
 	context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
 	context.fillStyle = "red"; //color
 	context.fill();
+}
+
+function _eat_pacmen(){
+	alert("OH NO!");
 }
 
 function _setScreen(screen){
