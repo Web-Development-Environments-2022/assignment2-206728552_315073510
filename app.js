@@ -26,10 +26,19 @@ login={
 	password:undefined
 }
 var users=[{username:'k',password:'k',email:'k@k.com'}]
-var serttings={
+//settings
+var buttonSelected=false
+var settings={
 	upKey:38,
 	downKey:40,
-	leftKey:undefined,
+	leftKey:37,
+	rightKey:39,
+	numberOfFoods:50,
+	foodColor5:'red',
+	foodColor15:'blue',
+	foodColor25:'green',
+	gameTime:60,
+	numberOfMonsters:4
 }
 
 
@@ -486,11 +495,34 @@ function _logIn(f){
 	return false
 }
 function goUpDef(){
-	$('#go-up-btn').html('press any key to define up key')
+	if(buttonSelected){
+		return
+	}
+	buttonSelected=true
+	let btn=$('#go-up-btn')
+	btn.html('press any key to define up key')
 	// $('#go-up-btn').disable()
-	$('#go-up-btn').css("background-color",'#B22727');
+	btn.css("background-color",'#B22727');
 	document.addEventListener('keydown', function(event) {
-		$('#go-up-btn').html('Go Up')
-		$('#go-up-btn').css("background-color",'#028498');
+		btn.html('Go Up')
+		btn.css("background-color",'#028498');
+		settings.upKey=event.keyCode 
+		buttonSelected=false
+	});
+}
+function goDownDef(){
+	if(buttonSelected){
+		return
+	}
+	buttonSelected=true
+	let btn=$('#go-down-btn')
+	btn.html('press any key to define up key')
+	// $('#go-up-btn').disable()
+	btn.css("background-color",'#B22727');
+	document.addEventListener('keydown', function(event) {
+		btn.html('Go Down')
+		btn.css("background-color",'#028498');
+		settings.upKey=event.keyCode 
+		buttonSelected=false
 	});
 }

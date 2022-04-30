@@ -79,6 +79,7 @@
 }
 .blue-bg-btn{
     background-color: #028498;
+    width: 150px !important;
 }
 form{
     display: flex;
@@ -94,4 +95,8 @@ span{
 .pre-input{
     font-family: sans-serif;
     margin-right: 5PX;
+}
+#key-define-div{
+    display: flex;
+    flex-direction: column;
 }
