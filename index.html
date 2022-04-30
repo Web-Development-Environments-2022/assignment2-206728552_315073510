@@ -74,17 +74,6 @@
 				</form>
 			</div>
 			<div id="settings_screen" class="screen">
-				
-				<div id="key-div" >
-					<span class="def-txt move-right-a-bit">Define movement keys</span>
-					<button class="btn blue-bg-btn updown" id="go-up-btn" onclick="_goUpDef()">Go Up</button>
-					<div id="left-right-div">
-						<button class="btn blue-bg-btn" id="go-left-btn" onclick="_goLeftDef()">Go Left</button>
-						<button class="btn blue-bg-btn" id="go-right-btn" onclick="_goRightDef()">Go Right</button>
-					</div>
-					<button class="btn blue-bg-btn updown" id="go-down-btn" onclick="_goDownDef()">Go Down</button>
-				</div>
-			
 				<div id="def-inputs">
 					<span class="def-txt margin-buttom-10">Define colors</span>
 					<div class="input-div">
@@ -110,6 +99,21 @@
 						<input class="coupled-input" type="text" id="food-points-input" value="50" onchange="onFoodPointsChange(this.value)">
 					</div>
 				</div>
+				<div id="key-div" >
+					<span class="def-txt move-right-a-bit">Define movement keys</span>
+					<button class="btn blue-bg-btn updown" id="go-up-btn" onclick="_goUpDef()">Go Up</button>
+					<div id="left-right-div">
+						<button class="btn blue-bg-btn" id="go-left-btn" onclick="_goLeftDef()">Go Left</button>
+						<button class="btn blue-bg-btn" id="go-right-btn" onclick="_goRightDef()">Go Right</button>
+					</div>
+					<button class="btn blue-bg-btn updown" id="go-down-btn" onclick="_goDownDef()">Go Down</button>
+					<button id="start-game" class="btn yellow-bg">Start Game</button>
+				</div>
+				<div id="status-div">
+					
+				</div>
+			
+				
 			</div>
 			<div id="about_dialog" title="About" class="screen " >
 				<div>--Developed by--</div>

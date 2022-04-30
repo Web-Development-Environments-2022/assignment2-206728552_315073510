@@ -1,12 +1,19 @@
 var context;
 var shape = new Object();
+var special_food = {
+	i:5,
+	j:5,
+	prev_val:0,
+	value:50
+};
 var board;
 var score;
 var pac_color;
 var start_time;
 var time_elapsed;
 var interval;
-ghost_num = 4;
+var interval_ghosts;
+var interval_special_food;
 var turn = 'R' //'R': right, 'L': left, 'U': up, 'D': down
 //register
 var registerForm={
@@ -16,6 +23,7 @@ var registerForm={
 	email:undefined,
 	dateOfBirth:undefined,
 }
+
 var username;
 var password
 var name;
@@ -28,7 +36,7 @@ login={
 }
 var users=[{username:'k',password:'k',email:'k@k.com'}]
 //settings
-var buttonSelected=false
+buttonSelected=false
 var settings={
 	upKey:38,
 	downKey:40,
@@ -44,7 +52,6 @@ var settings={
 afterClickColor ='#2A2550'
 
 
-
 $(document).ready(function() {
 	context = canvas.getContext("2d");
 	Start();
@@ -56,20 +63,20 @@ function Start() {
 	ghosts[1] = {i:0, j:9, prev_val:0 };
 	ghosts[2] = {i:9, j:0, prev_val:0 };
 	ghosts[3] = {i:9, j:9, prev_val:0 };
-	ghosts = ghosts.slice(-ghost_num);
-	console.log(ghosts);
+	ghosts = ghosts.slice(-settings.numberOfMonsters);
 	_createBoard()
 	_addListeners()
 }
 //generate the game board
-//0:blank , 1:food , 2:pacman , 3: ghost, 4:wall
+//0:blank , 1: , 2:pacman , 3: ghost , 4:wall , 5:food-5 , 6: food-15 , 7:food-25 , 8:random food - 50
 function _createBoard(){
 	board = new Array();
 	score = 0;
 	pac_color = "yellow";
+	food_remain = settings.numberOfFoods;
 	var cnt = 100;//number of cells
-	var food_remain = 50;
 	var pacman_remain = 1;
+	var special_food_remain = 1;
 	start_time = new Date();
 	for (var i = 0; i < 10; i++) {
 		board[i] = new Array();
@@ -109,11 +116,21 @@ function _createBoard(){
 				(i == ghosts[3].i && j == ghosts[3].j) 
 			){
 				board[i][j] = 3;
+			}else if(i == 5 && j == 5){
+				board[i][j] = 8;
 			}else {
 				var randomNum = Math.random();
 				if (randomNum <= (1.0 * food_remain) / cnt) {
 					food_remain--;
-					board[i][j] = 1;
+					var randomFood = Math.random();
+					if (randomFood <= 0.6){
+						board[i][j] = 5;
+					}else if(randomFood <= 0.9){
+						board[i][j] = 6;
+					}else{
+						board[i][j] = 7;
+					}
+					
 				} else if (randomNum < (1.0 * (pacman_remain + food_remain)) / cnt) {
 					//bug??
 					if (i <= 7 && i >= 2 && j <= 7 && j >= 2)
@@ -136,7 +153,6 @@ function _createBoard(){
 		var emptyCell = findRandomEmptyCell(board);//2 dimentional number array
 		while (emptyCell[0] > 7 || emptyCell[0] < 2 || emptyCell[1] > 7 || emptyCell[1] < 2){
 			emptyCell = findRandomEmptyCell(board);
-			console.log(emptyCell);
 		}
 		shape.i = emptyCell[0];
 		shape.j = emptyCell[1];
@@ -172,7 +188,7 @@ function _addListeners(){
 	);
 	interval = setInterval(UpdatePosition, 100);
 	interval_ghosts = setInterval(_UpdateGhosts, 1000);
-
+	interval_special_food = setInterval(_UpdateSpecialFood, 250);
 }
 //return a random 2 dim array
 function findRandomEmptyCell(board) {
@@ -188,16 +204,16 @@ function findRandomEmptyCell(board) {
 //convert keydown to number 
 //1:up , 2:down , 3:left , 4:right
 function GetKeyPressed() {
-	if (keysDown[38]) {//up
+	if (keysDown[settings.upKey]) {//up
 		return 1;
 	}
-	if (keysDown[40]) {//down
+	if (keysDown[settings.downKey]) {//down
 		return 2;
 	}
-	if (keysDown[37]) {//left
+	if (keysDown[settings.leftKey]) {//left
 		return 3;
 	}
-	if (keysDown[39]) {//right
+	if (keysDown[settings.rightKey]) {//right
 		return 4;
 	}
 }
@@ -215,15 +231,31 @@ function Draw() {
 				_draw_pacman(center);
 			} else if (board[i][j] == 3) {
 				_draw_ghost(center);
-			}else if (board[i][j] == 1) {
-				context.beginPath();
-				context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
-				context.fillStyle = "black"; //color
-				context.fill();
+
 			} else if (board[i][j] == 4) {
 				context.beginPath();
 				context.rect(center.x - 30, center.y - 30, 60, 60);
 				context.fillStyle = "grey"; //color
+				context.fill();
+			}else if (board[i][j] == 5) {
+				context.beginPath();
+				context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
+				context.fillStyle = settings.foodColor5; //color
+				context.fill();
+			}else if (board[i][j] == 6) {
+				context.beginPath();
+				context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
+				context.fillStyle = settings.foodColor15; //color
+				context.fill();
+			}else if (board[i][j] == 7) {
+				context.beginPath();
+				context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
+				context.fillStyle = settings.foodColor25; //color
+				context.fill();
+			}else if (board[i][j] == 8 && special_food.value == 50) {
+				context.beginPath();
+				context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
+				context.fillStyle = "black"; //color
 				context.fill();
 			}
 		}
@@ -231,6 +263,9 @@ function Draw() {
 }
 
 function UpdatePosition() {
+	if (lblTime.value == settings.gameTime){
+		_endgame();
+	}
 	board[shape.i][shape.j] = 0;
 	var x = GetKeyPressed();
 	if (x == 1) {
@@ -257,18 +292,29 @@ function UpdatePosition() {
 			turn = 'R';
 		}
 	}
-	if (board[shape.i][shape.j] == 1) {
-		score++;
+	if (board[shape.i][shape.j] == 5) {
+		score+=5;
+	}else if (board[shape.i][shape.j] == 6) {
+		score+=15;
+	}else if (board[shape.i][shape.j] == 7) {
+		score+=25;
+	}
+	else if (board[shape.i][shape.j] == 8) {
+		alert("amazing");
+		special_food.value=0;
+		score+=50;
 	}
 	board[shape.i][shape.j] = 2;//neww place
 	var currentTime = new Date();
-	time_elapsed = (currentTime - start_time) / 1000;
+	time_elapsed = settings.gameTime - (currentTime - start_time) / 1000;
 	if (score >= 20 && time_elapsed <= 10) {
 		pac_color = "green";
 	}
-	if (score == 50) {
+	if (score == 1000) {
 		Draw();
 		window.clearInterval(interval);
+		window.clearInterval(interval_ghosts);
+		window.clearInterval(interval_special_food);
 		window.alert("Game completed");
 	} else {
 		Draw();
@@ -276,26 +322,58 @@ function UpdatePosition() {
 }
 
 function _UpdateGhosts(){
-	ghost = ghosts[0];
-	if(board[ghost.i+1][ghost.j] == 2){
-		_eat_pacmen();
+	// ghost = ghosts[0];
+	// if(board[ghost.i+1][ghost.j] == 2){
+	// 	_eat_pacmen();
+	// }
+	// val = ghost.prev_val;
+	// ghost.prev_val = board[ghost.i+1][ghost.j]
+	// ghost.i ++;
+	// board[ghost.i][ghost.j] = 3;
+	// board[ghost.i-1][ghost.j] = val;
+}
+
+function _UpdateSpecialFood(){
+	var random = Math.random();
+	if (random <= 0.25){
+		if (special_food.i+1 <= 9 && board[special_food.i+1][special_food.j] != 4 && board[special_food.i+1][special_food.j] != 2){
+			val = special_food.prev_val;
+			special_food.prev_val = board[special_food.i+1][special_food.j]
+			special_food.i++;
+			board[special_food.i][special_food.j] = 8;
+			board[special_food.i-1][special_food.j] = val;
+		}
+	}else if (random <= 0.5){
+		if (special_food.i-1 >=0 && board[special_food.i-1][special_food.j] != 4 && board[special_food.i-1][special_food.j] != 2){
+			val = special_food.prev_val;
+			special_food.prev_val = board[special_food.i-1][special_food.j]
+			special_food.i--;
+			board[special_food.i][special_food.j] = 8;
+			board[special_food.i+1][special_food.j] = val;
+		}
+	}else if (random <= 0.75){
+		if (special_food.j-1 >=0 && board[special_food.i][special_food.j-1] != 4 && board[special_food.i][special_food.j-1] != 2){
+			val = special_food.prev_val;
+			special_food.prev_val = board[special_food.i][special_food.j-1]
+			special_food.j--;
+			board[special_food.i][special_food.j] = 8;
+			board[special_food.i][special_food.j+1] = val;
+		}
+	}else{
+		if (special_food.j+1 <= 9 && board[special_food.i][special_food.j+1] != 4 && board[special_food.i][special_food.j+1] != 2){
+			val = special_food.prev_val;
+			special_food.prev_val = board[special_food.i][special_food.j+1]
+			special_food.j++;
+			board[special_food.i][special_food.j] = 8;
+			board[special_food.i][special_food.j-1] = val;
+		}
 	}
-	console.log(ghost);
-	val = ghost.prev_val;
-	ghost.prev_val = board[ghost.i+1][ghost.j]
-	ghost.i ++;
-	board[ghost.i][ghost.j] = 3;
-	board[ghost.i-1][ghost.j] = val;
-	if (board[ghost.i][ghost.j] == 2) {
-		console.log("ghost for the winnnnnnnnnnnnn");
-	}
+
 }
 
 //Draw functions:
 
 function _draw_pacman(center){
-	console.log(turn);
-
 	if (turn == 'U'){	context.beginPath();
 		context.arc(center.x, center.y, 30, 1.65 * Math.PI, 1.35 * Math.PI); // half circle
 		context.lineTo(center.x, center.y);
@@ -371,6 +449,8 @@ function _setScreen(screen){
 	}
 	else if(screen==='settings'){
 		_displayScreen('settings_screen')
+		_setDisplayedSettings()
+		
 	}
 	else if(screen==='game'){
 		_displayScreen('game_screen')
@@ -390,6 +470,28 @@ function _displayNoneAllScreens(){
 
 	document.getElementById('game_screen').style.display='none'
 
+}
+function _asciiToChar(n){
+	if([37,38,39,40].includes(n)){
+		return _arrowToChar(n)
+	}
+	else{
+		return String.fromCharCode(n)
+	}
+}
+function _arrowToChar(n) {
+	if (n) {//up
+		return '&#x2191;';
+	}
+	if (n) {//down
+		return '&#x2193;';
+	}
+	if (n) {//left
+		return '&#x2190;';
+	}
+	if (n) {//right
+		return '&#x2192;';
+	}
 }
 function _openAboutDialog(){
 
@@ -475,6 +577,7 @@ function _goUpDef(){
 		settings.upKey=event.keyCode 
 		buttonSelected=false
 	});
+	_setDisplayedSettings()
 }
 function _goDownDef(){
 	if(buttonSelected){
@@ -505,6 +608,7 @@ function _goLeftDef(){
 		settings.leftKey=event.keyCode 
 		buttonSelected=false
 	});
+	_setDisplayedSettings()
 }
 function _goRightDef(){
 	if(buttonSelected){
@@ -520,15 +624,19 @@ function _goRightDef(){
 		settings.rightKey=event.keyCode 
 		buttonSelected=false
 	});
+	_setDisplayedSettings()
 }
 function on5pColorChange(val){
 	settings.foodColor5=val
+	_setDisplayedSettings()
 }
 function on15pColorChange(val){
 	settings.foodColor15=val
+	_setDisplayedSettings()
 }
 function on25pColorChange(val){
 	settings.foodColor25=val
+	_setDisplayedSettings()
 }
 function onGameTimeChange(val){
 	if(val<60){
@@ -538,20 +646,26 @@ function onGameTimeChange(val){
 	else{
 		settings.gameTime=parseInt(val)
 	}
+	_setDisplayedSettings()
 	
 }
 function onFoodPointsChange(val){
 
 	if(val<50){
-		alert('Number of food points should be between 50 and 90,number is below 50');
-		$('food-points-input').val(50);
+		alert('Number of food points should be between 50 and 90');
+		$('#food-points-input').val(50);
 	}
 	else if(val>90){
-		alert('Number of food points should be between 50 and 90,number is above 90');
-		$('food-points-input').val(90);
+		alert('Number of food points should be between 50 and 90');
+		$('#food-points-input').val(90);
 	}
 	else{
 		settings.food_remain=parseInt(val)
 	}
+	_setDisplayedSettings()
 	
+}
+function _setDisplayedSettings(){
+	let status='up:'+_asciiToChar(settings.upKey);
+	$('#status-div').html(status )
 }
