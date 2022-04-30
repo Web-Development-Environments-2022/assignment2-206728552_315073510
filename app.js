@@ -6,6 +6,7 @@ var pac_color;
 var start_time;
 var time_elapsed;
 var interval;
+var turn = 'R' //'R': right, 'L': left, 'U': up, 'D': down
 
 $(document).ready(function() {
 	context = canvas.getContext("2d");
@@ -138,15 +139,7 @@ function Draw() {
 			center.x = i * 60 + 30;
 			center.y = j * 60 + 30;
 			if (board[i][j] == 2) {
-				context.beginPath();
-				context.arc(center.x, center.y, 30, 0.15 * Math.PI, 1.85 * Math.PI); // half circle
-				context.lineTo(center.x, center.y);
-				context.fillStyle = pac_color; //color
-				context.fill();//pacman body
-				context.beginPath();
-				context.arc(center.x + 5, center.y - 15, 5, 0, 2 * Math.PI); // circle
-				context.fillStyle = "black"; //color
-				context.fill();//pacman eye
+				_draw_pacman(center);
 			} else if (board[i][j] == 1) {
 				context.beginPath();
 				context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
@@ -168,21 +161,25 @@ function UpdatePosition() {
 	if (x == 1) {
 		if (shape.j > 0 && board[shape.i][shape.j - 1] != 4) {
 			shape.j--;
+			turn = 'U';
 		}
 	}
 	if (x == 2) {
 		if (shape.j < 9 && board[shape.i][shape.j + 1] != 4) {
 			shape.j++;
+			turn = 'D';
 		}
 	}
 	if (x == 3) {
 		if (shape.i > 0 && board[shape.i - 1][shape.j] != 4) {
 			shape.i--;
+			turn = 'L';
 		}
 	}
 	if (x == 4) {
 		if (shape.i < 9 && board[shape.i + 1][shape.j] != 4) {
 			shape.i++;
+			turn = 'R';
 		}
 	}
 	if (board[shape.i][shape.j] == 1) {
@@ -200,4 +197,59 @@ function UpdatePosition() {
 	} else {
 		Draw();
 	}
+}
+
+//Draw functions:
+
+function _draw_pacman(center){
+	console.log(turn);
+
+	if (turn == 'U'){	context.beginPath();
+		context.arc(center.x, center.y, 30, 1.65 * Math.PI, 1.35 * Math.PI); // half circle
+		context.lineTo(center.x, center.y);
+		context.fillStyle = pac_color; //color
+		context.fill();//pacman body
+		context.beginPath();
+		context.arc(center.x - 15, center.y - 5, 5, 0, 2 * Math.PI); // circle
+		context.fillStyle = "black"; //color
+		context.fill();//pacman eye
+
+	}
+
+	if (turn == 'D'){
+		context.beginPath();
+		context.arc(center.x, center.y, 30, 0.65 * Math.PI, 0.35 * Math.PI); // half circle
+		context.lineTo(center.x, center.y);
+		context.fillStyle = pac_color; //color
+		context.fill();//pacman body
+		context.beginPath();
+		context.arc(center.x + 15, center.y + 5, 5, 0, 2 * Math.PI); // circle
+		context.fillStyle = "black"; //color
+		context.fill();//pacman eye
+	}
+
+	if (turn == 'L'){
+		context.beginPath();
+		context.arc(center.x, center.y, 30, 1.15 * Math.PI, 0.85 * Math.PI); // half circle
+		context.lineTo(center.x, center.y);
+		context.fillStyle = pac_color; //color
+		context.fill();//pacman body
+		context.beginPath();
+		context.arc(center.x - 5, center.y - 15, 5, 0, 2 * Math.PI); // circle
+		context.fillStyle = "black"; //color
+		context.fill();//pacman eye
+	}
+
+	if (turn == 'R'){
+		context.beginPath();
+		context.arc(center.x, center.y, 30, 0.15 * Math.PI, 1.85 * Math.PI); // half circle
+		context.lineTo(center.x, center.y);
+		context.fillStyle = pac_color; //color
+		context.fill();//pacman body
+		context.beginPath();
+		context.arc(center.x + 5, center.y - 15, 5, 0, 2 * Math.PI); // circle
+		context.fillStyle = "black"; //color
+		context.fill();//pacman eye
+	}
+
 }
