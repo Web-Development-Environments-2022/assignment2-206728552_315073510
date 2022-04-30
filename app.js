@@ -6,6 +6,7 @@ var pac_color;
 var start_time;
 var time_elapsed;
 var interval;
+ghost_num = 4;
 var turn = 'R' //'R': right, 'L': left, 'U': up, 'D': down
 //register
 var registerForm={
@@ -39,6 +40,13 @@ $(document).ready(function() {
 	_setScreen('game')
 });
 function Start() {
+	ghosts = [];
+	ghosts[0] = {i:0, j:0, prev_val:0 };
+	ghosts[1] = {i:0, j:9, prev_val:0 };
+	ghosts[2] = {i:9, j:0, prev_val:0 };
+	ghosts[3] = {i:9, j:9, prev_val:0 };
+	ghosts = ghosts.slice(-ghost_num);
+	console.log(ghosts);
 	_createBoard()
 	_addListeners()
 }
