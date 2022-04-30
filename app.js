@@ -36,7 +36,7 @@ function Start() {
 	_addListeners()
 }
 //generate the game board
-//0:blank , 1:food , 2:pacman , 3: , 4:wall
+//0:blank , 1:food , 2:pacman , 3: ghost, 4:wall
 function _createBoard(){
 	board = new Array();
 	score = 0;
@@ -50,24 +50,54 @@ function _createBoard(){
 		//put obstacles in (i=3,j=3) and (i=3,j=4) and (i=3,j=5), (i=6,j=1) and (i=6,j=2)
 		for (var j = 0; j < 10; j++) {
 			if (
-				(i == 3 && j == 3) ||
-				(i == 3 && j == 4) ||
-				(i == 3 && j == 5) ||
+				(i == 1 && j == 1) ||
+				(i == 1 && j == 2) ||
+				(i == 1 && j == 3) ||
+				(i == 1 && j == 6) ||
+				(i == 1 && j == 7) ||
+				(i == 1 && j == 8) ||
+
+				(i == 2 && j == 1) ||
+				(i == 2 && j == 8) ||
+				(i == 3 && j == 1) ||
+				(i == 3 && j == 8) ||
+
 				(i == 6 && j == 1) ||
-				(i == 6 && j == 2)
+				(i == 6 && j == 8) ||
+				(i == 7 && j == 1) ||
+				(i == 7 && j == 8) ||
+
+				(i == 8 && j == 1) ||
+				(i == 8 && j == 2) ||
+				(i == 8 && j == 3) ||
+				(i == 8 && j == 6) ||
+				(i == 8 && j == 7) ||
+				(i == 8 && j == 8) 
 			) {
 				board[i][j] = 4;
-			} else {
+			} 
+			else if(
+				(i == 0 && j == 0) ||
+				(i == 0 && j == 9) ||
+				(i == 9 && j == 0) ||
+				(i == 9 && j == 9) 
+			){
+				board[i][j] = 3;
+			}else {
 				var randomNum = Math.random();
 				if (randomNum <= (1.0 * food_remain) / cnt) {
 					food_remain--;
 					board[i][j] = 1;
 				} else if (randomNum < (1.0 * (pacman_remain + food_remain)) / cnt) {
 					//bug??
-					shape.i = i;
-					shape.j = j;
-					pacman_remain--;
-					board[i][j] = 2;
+					if (i <= 7 && i >= 2 && j <= 7 && j >= 2)
+					{					
+						shape.i = i;
+						shape.j = j;
+						pacman_remain--;
+						board[i][j] = 2;
+					}
+
 				} else {
 					board[i][j] = 0;
 				}
@@ -75,12 +105,27 @@ function _createBoard(){
 			}
 		}
 	}
+
+	if (pacman_remain == 1){
+		var emptyCell = findRandomEmptyCell(board);//2 dimentional number array
+		while (emptyCell[0] > 7 || emptyCell[0] < 2 || emptyCell[1] > 7 || emptyCell[1] < 2){
+			emptyCell = findRandomEmptyCell(board);
+			console.log(emptyCell);
+		}
+		shape.i = emptyCell[0];
+		shape.j = emptyCell[1];
+		board[emptyCell[0]][emptyCell[1]] = 2;
+		pacman_remain--;
+	}
+
 	//adding left food to the game
 	while (food_remain > 0) {
 		var emptyCell = findRandomEmptyCell(board);//2 dimentional number array
 		board[emptyCell[0]][emptyCell[1]] = 1;
 		food_remain--;
 	}
+
+
 }
 //add key listeners
 function _addListeners(){
@@ -140,7 +185,9 @@ function Draw() {
 			center.y = j * 60 + 30;
 			if (board[i][j] == 2) {
 				_draw_pacman(center);
-			} else if (board[i][j] == 1) {
+			} else if (board[i][j] == 3) {
+				_draw_ghost(center);
+			}else if (board[i][j] == 1) {
 				context.beginPath();
 				context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
 				context.fillStyle = "black"; //color
@@ -192,6 +239,7 @@ function UpdatePosition() {
 		pac_color = "green";
 	}
 	if (score == 50) {
+		Draw();
 		window.clearInterval(interval);
 		window.alert("Game completed");
 	} else {
@@ -252,4 +300,11 @@ function _draw_pacman(center){
 		context.fill();//pacman eye
 	}
 
+}
+
+function _draw_ghost(center){
+	context.beginPath();
+	context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
+	context.fillStyle = "red"; //color
+	context.fill();
 }
