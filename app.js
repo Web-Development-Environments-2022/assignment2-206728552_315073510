@@ -47,7 +47,7 @@ var settings={
 	foodColor15:'yellow',
 	foodColor25:'green',
 	gameTime:60,
-	numberOfMonsters:4
+	numberOfghosts:4
 }
 afterClickColor ='#2A2550'
 
@@ -55,7 +55,7 @@ afterClickColor ='#2A2550'
 $(document).ready(function() {
 	context = canvas.getContext("2d");
 	Start();
-	_setScreen('settings')
+	_setScreen('game')
 });
 function Start() {
 	ghosts = [];
@@ -63,7 +63,7 @@ function Start() {
 	ghosts[1] = {i:0, j:9, prev_val:0 };
 	ghosts[2] = {i:9, j:0, prev_val:0 };
 	ghosts[3] = {i:9, j:9, prev_val:0 };
-	ghosts = ghosts.slice(-settings.numberOfMonsters);
+	ghosts = ghosts.slice(-settings.numberOfghosts);
 	_createBoard()
 	_addListeners()
 }
