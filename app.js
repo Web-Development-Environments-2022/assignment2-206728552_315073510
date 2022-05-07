@@ -296,9 +296,10 @@ function UpdatePosition() {
 		score+=25;
 	}
 	else if (board[shape.i][shape.j] == 8) {
-		alert("amazing");
+		//alert("amazing");
 		special_food.value=0;
 		score+=50;
+		window.clearInterval(interval_special_food);
 	}
 	board[shape.i][shape.j] = 2;//neww place
 	var currentTime = new Date();
