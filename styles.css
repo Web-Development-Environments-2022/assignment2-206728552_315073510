@@ -100,3 +100,77 @@ span{
     display: flex;
     flex-direction: column;
 }
+#left-right-div{
+    display: flex;
+}
+.updown{
+    position: relative;
+    left: 80px;
+}
+.def-txt{
+    font-family: sans-serif;
+
+    color: white;
+    background-color: #0b4a54;
+    width: 190px;
+    height: 25px;
+
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    border-radius: 25px;
+}
+.move-right-a-bit{
+    position: relative;
+    left: 70px;
+}
+.margin-buttom-10{
+    margin-bottom: 10px;
+}
+#def-inputs{
+    margin-left: 50px;
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    font-family: sans-serif;
+    
+}
+.input-div{
+    margin-bottom: 10px ;
+    display: flex;
+    justify-content:space-evenly;
+}
+.coupled-input{
+    position: relative;
+    top:5px;
+    margin-left: 5px;
+}
+.def-food{
+    width: 300px !important;
+}
+#start-game{
+    width: 200px;
+
+    position: relative;
+    top: 100px;
+    left: -108px;
+}
+#status-div-div{
+    padding-top: 30px;
+    height: 300px;
+    width: 160px;
+    background-color: white;
+    box-shadow: 0px 0px 10px  rgb(236, 236, 236);;
+}
+#key-div{
+    margin-left: 30px;
+}
+#status-title{
+    font-family: sans-serif;
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 20px;
+    text-decoration: underline;
+    color:darkslateblue;
+}

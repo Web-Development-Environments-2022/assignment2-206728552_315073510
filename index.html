@@ -4,11 +4,15 @@
 		<script src="./jquery-3.4.1.slim.min.js"></script>
 		<script type="text/javascript" src="./app.js"></script>
 		<link rel="stylesheet" href="./styles.css">
-
+		<!-- dialog -->
 		<link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
 		<link rel="stylesheet" href="/resources/demos/style.css">
 		<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 		<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+
+		<!-- MiniColors -->
+		<script src="jquery.minicolors.js"></script>
+		<link rel="stylesheet" href="jquery.minicolors.css">
 
 		<div id="header" class="centered-div col">
 			<h1 id=title>PacmaniA</h1>
@@ -70,10 +74,49 @@
 				</form>
 			</div>
 			<div id="settings_screen" class="screen">
-				<div id="key-define-div" >
-					<button class="btn blue-bg-btn" id="go-up-btn" onclick="goUpDef()">Go Up</button>
-					<button class="btn blue-bg-btn" id="go-down-btn" onclick="goDownDef()">Go Down</button>
+				<div id="def-inputs">
+					<span class="def-txt margin-buttom-10">Define colors</span>
+					<div class="input-div">
+						<span>5 point food color: </span>
+						<input class="coupled-input" type="text" id="5p-input" value="blue" onchange="on5pColorChange(this.value)">
+					</div>
+					<div class="input-div">
+						<span>15 point food color: </span>
+						<input class="coupled-input" type="text" id="15p-input" value="yellow" onchange="on15pColorChange(this.value)">
+					</div>
+					<div class="input-div">
+						<span>25 point food color: </span>
+						<input class="coupled-input" type="text" id="25p-input" value="green" onchange="on25pColorChange(this.value)">
+					</div>
+					<span class="def-txt margin-buttom-10">Define Game Time</span>
+					<div class="input-div">
+						<span>Game Time: </span>
+						<input class="coupled-input" type="text" id="game-time-input" value="60" onchange="onGameTimeChange(this.value)">
+					</div>
+					<span class="def-txt margin-buttom-10 def-food">Define Number Of Food Points</span>
+					<div class="input-div">
+						<span>Food Points: </span>
+						<input class="coupled-input" type="text" id="food-points-input" value="50" onchange="onFoodPointsChange(this.value)">
+					</div>
 				</div>
+				<div id="key-div" >
+					<span class="def-txt move-right-a-bit">Define movement keys</span>
+					<button class="btn blue-bg-btn updown" id="go-up-btn" onclick="_goUpDef()">Go Up</button>
+					<div id="left-right-div">
+						<button class="btn blue-bg-btn" id="go-left-btn" onclick="_goLeftDef()">Go Left</button>
+						<button class="btn blue-bg-btn" id="go-right-btn" onclick="_goRightDef()">Go Right</button>
+					</div>
+					<button class="btn blue-bg-btn updown" id="go-down-btn" onclick="_goDownDef()">Go Down</button>
+					<button onclick="startGame()" id="start-game" class="btn yellow-bg">Start Game</button>
+				</div>
+				<div id="status-div-div">
+					<div id="status-title">Keys</div>
+					<div id="status-div">
+					
+					</div>
+				</div>
+			
+				
 			</div>
 			<div id="about_dialog" title="About" class="screen " >
 				<div>--Developed by--</div>

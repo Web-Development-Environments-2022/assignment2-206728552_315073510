@@ -35,23 +35,27 @@ login={
 	password:undefined
 }
 var users=[{username:'k',password:'k',email:'k@k.com'}]
+//settings
+buttonSelected=false
 var settings={
 	upKey:38,
 	downKey:40,
 	leftKey:37,
 	rightKey:39,
 	numberOfFoods:50,
-	foodColor5:'yellow',
-	foodColor15:'blue',
+	foodColor5:'blue',
+	foodColor15:'yellow',
 	foodColor25:'green',
 	gameTime:60,
 	numberOfMonsters:4
 }
+afterClickColor ='#2A2550'
+
 
 $(document).ready(function() {
 	context = canvas.getContext("2d");
 	Start();
-	_setScreen('game')
+	_setScreen('settings')
 });
 function Start() {
 	ghosts = [];
@@ -446,6 +450,8 @@ function _setScreen(screen){
 	}
 	else if(screen==='settings'){
 		_displayScreen('settings_screen')
+		_setDisplayedSettings()
+		
 	}
 	else if(screen==='game'){
 		_displayScreen('game_screen')
@@ -465,6 +471,28 @@ function _displayNoneAllScreens(){
 
 	document.getElementById('game_screen').style.display='none'
 
+}
+function _asciiToChar(n){
+	if([37,38,39,40].includes(n)){
+		return _arrowToChar(n)
+	}
+	else{
+		return String.fromCharCode(n)
+	}
+}
+function _arrowToChar(n) {
+	if (n==38) {//up
+		return '&#x2191;';
+	}
+	if (n==40) {//down
+		return '&#x2193;';
+	}
+	if (n==37) {//left
+		return '&#x2190;';
+	}
+	if (n==39) {//right
+		return '&#x2192;';
+	}
 }
 function _openAboutDialog(){
 
@@ -536,17 +564,134 @@ function _logIn(f){
 	}
 	return false
 }
-function goUpDef(){
-	$('#go-up-btn').html('press any key to define up key')
-	// $('#go-up-btn').disable()
-	$('#go-up-btn').css("background-color",'#B22727');
-	document.addEventListener('keydown', function(event) {
-		$('#go-up-btn').html('Go Up')
-		$('#go-up-btn').css("background-color",'#028498');
-	});
-}
+function _goUpDef(){
+	if(buttonSelected){
+		return
+	}
+	buttonSelected=true
+	let btn=$('#go-up-btn')
+	btn.html('press any key to define up key')
+	btn.css("background-color",'#B22727');
+	foo= function(event) {
+		btn.html('Go Up')
+		btn.css("background-color",afterClickColor);
+		settings.upKey=event.keyCode 
+		buttonSelected=false
+		removeEventListener('keydown',foo)
+		_setDisplayedSettings()
+	}
+	addEventListener('keydown',foo);
 
-function _endgame(){
-	alert("game is ended");
-}
 
+}
+function _goDownDef(){
+	if(buttonSelected){
+		return
+	}
+	buttonSelected=true
+	let btn=$('#go-down-btn')
+	btn.html('press any key to define down key')
+	btn.css("background-color",'#B22727');
+	foo=function(event) {
+		btn.html('Go Down')
+		btn.css("background-color",afterClickColor);
+		settings.downKey=event.keyCode 
+		buttonSelected=false
+		removeEventListener('keydown',foo)
+		_setDisplayedSettings()
+	}
+	addEventListener('keydown', foo);
+}
+function _goLeftDef(){
+	if(buttonSelected){
+		return
+	}
+	buttonSelected=true
+	let btn=$('#go-left-btn')
+	btn.html('press any key to define left key')
+	btn.css("background-color",'#B22727');
+	foo=function(event) {
+		btn.html('Go Left')
+		btn.css("background-color",afterClickColor);
+		settings.leftKey=event.keyCode 
+		buttonSelected=false
+		removeEventListener('keydown',foo)
+		_setDisplayedSettings()
+	}
+	addEventListener('keydown',foo );
+
+}
+function _goRightDef(){
+	if(buttonSelected){
+		return
+	}
+	buttonSelected=true
+	let btn=$('#go-right-btn')
+	btn.html('press any key to define left key')
+	btn.css("background-color",'#B22727');
+	foo=function(event) {
+		btn.html('Go Right')
+		btn.css("background-color",afterClickColor);
+		settings.rightKey=event.keyCode 
+		buttonSelected=false
+		removeEventListener('keydown',foo)
+		_setDisplayedSettings()
+	}
+	addEventListener('keydown',foo );
+
+}
+function on5pColorChange(val){
+	settings.foodColor5=val
+	_setDisplayedSettings()
+}
+function on15pColorChange(val){
+	settings.foodColor15=val
+	_setDisplayedSettings()
+}
+function on25pColorChange(val){
+	settings.foodColor25=val
+	_setDisplayedSettings()
+}
+function onGameTimeChange(val){
+	if(val<60){
+		alert('Game time should be at least 60');
+		$('#game-time-input').val(60)
+	}
+	else{
+		settings.gameTime=parseInt(val)
+	}
+	_setDisplayedSettings()
+	
+}
+function onFoodPointsChange(val){
+
+	if(val<50){
+		alert('Number of food points should be between 50 and 90');
+		$('#food-points-input').val(50);
+	}
+	else if(val>90){
+		alert('Number of food points should be between 50 and 90');
+		$('#food-points-input').val(90);
+	}
+	else{
+		settings.food_remain=parseInt(val)
+	}
+	_setDisplayedSettings()
+	
+}
+function _setDisplayedSettings(){
+	let status=
+	
+	'<div style="margin-bottom:8px;"> Left: '+_asciiToChar(settings.leftKey)+'</div>'+
+	'<div style="margin-bottom:8px;"> up: '+_asciiToChar(settings.upKey)+'</div>'+
+	'<div style="margin-bottom:8px;"> Down: '+_asciiToChar(settings.downKey)+'</div>'+
+	'<div style="margin-bottom:8px;"> Right: '+_asciiToChar(settings.rightKey)+'</div>'
+
+	// status='<div>aa</div>'
+	$('#status-div').html(status )
+	$('#status-div').css('font-family','sans-serif')
+	$('#status-div').css('text-align','center')
+}
+function startGame(){
+	_setScreen('game')
+}
