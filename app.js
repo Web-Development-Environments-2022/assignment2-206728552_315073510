@@ -55,7 +55,13 @@ afterClickColor ='#2A2550'
 $(document).ready(function() {
 	context = canvas.getContext("2d");
 	Start();
-	_setScreen('game')
+	const user = localStorage.getItem('currentUser');
+	
+	if(user){
+		_setUserIndex(user);
+		_setScreen('settings');
+	}
+	else _setScreen('welcome');
 });
 function Start() {
 	ghosts = [];
@@ -526,6 +532,10 @@ function _onRegisterSubmit(form) {
 	registerForm.name = $('#reg_name').val();
 	registerForm.email = $('#reg_email').val();
 	registerForm.dateOfBirth = $('#reg_date').val();
+	if(users.map(u=>u.username).includes(registerForm.username)){
+		alert('User is already registered');
+		return false
+	}
 	users.push({username:registerForm.username,password:registerForm.password})
 	alert('User has been registered successfuly')
 	return false;
@@ -557,7 +567,9 @@ function _logIn(f){
 	if(users.map(u=>u.username).includes(login.username)&&
 		users.map(u=>u.password).includes(login.password)){
 			alert('Logged In');
-			_setScreen('settings');
+			localStorage.setItem('currentUser', login.username);
+			_setUserIndex(login.username)
+			_setScreen('game');
 		}
 	else{
 		alert('incorrect password or username')
@@ -570,11 +582,13 @@ function _goUpDef(){
 	}
 	buttonSelected=true
 	let btn=$('#go-up-btn')
-	btn.html('press any key to define up key')
+
 	btn.css("background-color",'#B22727');
+	btn.css("color",'white');
 	foo= function(event) {
 		btn.html('Go Up')
 		btn.css("background-color",afterClickColor);
+		btn.css("color",'white');
 		settings.upKey=event.keyCode 
 		buttonSelected=false
 		removeEventListener('keydown',foo)
@@ -590,11 +604,13 @@ function _goDownDef(){
 	}
 	buttonSelected=true
 	let btn=$('#go-down-btn')
-	btn.html('press any key to define down key')
+
 	btn.css("background-color",'#B22727');
+	btn.css("color",'white');
 	foo=function(event) {
 		btn.html('Go Down')
 		btn.css("background-color",afterClickColor);
+		btn.css("color",'white');
 		settings.downKey=event.keyCode 
 		buttonSelected=false
 		removeEventListener('keydown',foo)
@@ -608,11 +624,13 @@ function _goLeftDef(){
 	}
 	buttonSelected=true
 	let btn=$('#go-left-btn')
-	btn.html('press any key to define left key')
+
 	btn.css("background-color",'#B22727');
+	btn.css("color",'white');
 	foo=function(event) {
 		btn.html('Go Left')
 		btn.css("background-color",afterClickColor);
+		btn.css("color",'white');
 		settings.leftKey=event.keyCode 
 		buttonSelected=false
 		removeEventListener('keydown',foo)
@@ -627,11 +645,13 @@ function _goRightDef(){
 	}
 	buttonSelected=true
 	let btn=$('#go-right-btn')
-	btn.html('press any key to define left key')
+
 	btn.css("background-color",'#B22727');
+	btn.css("color",'white');
 	foo=function(event) {
 		btn.html('Go Right')
 		btn.css("background-color",afterClickColor);
+		btn.css("color",'white');
 		settings.rightKey=event.keyCode 
 		buttonSelected=false
 		removeEventListener('keydown',foo)
@@ -694,4 +714,11 @@ function _setDisplayedSettings(){
 }
 function startGame(){
 	_setScreen('game')
+}
+function _setUserIndex(username){
+	debugger
+	$('#userInfo').html(
+		'<i class="glyphicon glyphicon-user" style="margin-right: 15px;"></i>'+
+		username
+		)
 }
