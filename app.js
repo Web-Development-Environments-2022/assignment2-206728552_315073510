@@ -155,8 +155,9 @@ function _createBoard(){
 
 	//adding left food to the game
 	while (food_remain > 0) {
+		//console.log(food_remain);
 		var emptyCell = findRandomEmptyCell(board);//2 dimentional number array
-		board[emptyCell[0]][emptyCell[1]] = 1;
+		board[emptyCell[0]][emptyCell[1]] = 5;
 		food_remain--;
 	}
 
@@ -258,13 +259,13 @@ function Draw() {
 
 function UpdatePosition() {
 	if (lblTime.value >= settings.gameTime){
+		Start();
 		alert("Time is up! You lost...")
-		startGame();
 	}
 
 	if (lives <= 0){
+		Start();
 		alert("No more lives! You lost...")
-		startGame();
 	}
 
 	board[shape.i][shape.j] = 0;
@@ -334,21 +335,43 @@ function _UpdateGhosts(){
 		val = ghost.prev_val;
 		var Dir = _FindDir(ghost);
 		var new_loc = _CalcNewLoc(Dir, ghost);
-		while(new_loc[0] <= 9 && new_loc[0] >=0 && new_loc[1] <= 9 && new_loc[1] >=0 &&board[new_loc[0]][new_loc[1]] == 4 || board[new_loc[0]][new_loc[1]] == 3){ //ghost hit the wall or other ghost
-			Dir = _GetRandomDir();
-			var new_loc = _CalcNewLoc(Dir, ghost);
-		}
+		var flag = _locNotLegit(new_loc);
+		console.log(flag);
+		// while(flag == true){
+		// 	console.log("in while loop");	
+		// 	Dir = _GetRandomDir();
+		// 	new_loc = _CalcNewLoc(Dir, ghost);
+		// 	flag = _locNotLegit(new_loc);
+		// }
+		console.log("$$$$$$$$$$$$$$$$$$$$$$ out while loop");	
+
+		
+		//console.log(new_loc);
 		ghost.prev_val = board[new_loc[0]][new_loc[1]];
 		if (val != 2 && val != 3){
 			board[ghost.i][ghost.j] = val;
 		}
 		ghost.i = new_loc[0];
 		ghost.j = new_loc[1];
-		if(board[ghost.i][ghost.j]== 2){
-			_eat_pacmen();
-		}
+		// if(board[ghost.i][ghost.j]== 2){
+		// 	_eat_pacmen();
+		// }
 		board[ghost.i][ghost.j] = 3;
 	}
+}
+
+function _locNotLegit(new_loc){
+	console.log("~~~~~~~");
+	if (new_loc[0] >= 9 || new_loc[0] <= 0 || new_loc[1] >= 9 || new_loc[1] <=0){
+		console.log("~~~~1~~~");
+		return true;
+	}else if (board[new_loc[0]][new_loc[1]] == 4 || board[new_loc[0]][new_loc[1]] == 3 || board[new_loc[0]][new_loc[1]] == 2){
+		console.log("~~~~~2~~~~~~");
+		return true;
+	}
+	console.log("~~~~~3~~~~~~");
+
+	return false;
 }
 
 function _FindDir(ghost){
@@ -487,8 +510,13 @@ function _draw_ghost(center){
 
 function _eat_pacmen(){
 	alert("OH NO! You have been eaten by a Ghost!");
-	shape.i = 4;
-	shape.j = 4;
+	if (shape.i == 4 && shape.j == 4){
+		shape.i = 5;
+		shape.j = 5;
+	}else{
+		shape.i = 4;
+		shape.j = 4;
+	}
 	UpdatePosition();
 	lives --;
 }
