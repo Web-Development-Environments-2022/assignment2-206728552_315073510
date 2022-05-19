@@ -155,7 +155,6 @@ function _createBoard(){
 
 	//adding left food to the game
 	while (food_remain > 0) {
-		//console.log(food_remain);
 		var emptyCell = findRandomEmptyCell(board);//2 dimentional number array
 		board[emptyCell[0]][emptyCell[1]] = 5;
 		food_remain--;
@@ -180,8 +179,13 @@ function _addListeners(){
 		false
 	);
 	interval = setInterval(UpdatePosition, 100);
-	interval_ghosts = setInterval(_UpdateGhosts, 800);
-	interval_special_food = setInterval(_UpdateSpecialFood, 250);
+	interval_ghosts = setInterval(_updateMovingParts, 400);
+	// interval_special_food = setInterval(_UpdateSpecialFood, 400);
+}
+
+function _updateMovingParts(){
+	_UpdateGhosts();
+	_UpdateSpecialFood();
 }
 //return a random 2 dim array
 function findRandomEmptyCell(board) {
@@ -259,15 +263,13 @@ function Draw() {
 
 function UpdatePosition() {
 	if (lblTime.value >= settings.gameTime){
+		alert("Time is up! You lost...");
 		Start();
-		alert("Time is up! You lost...")
 	}
-
 	if (lives <= 0){
+		alert("No more lives! You lost...");
 		Start();
-		alert("No more lives! You lost...")
 	}
-
 	board[shape.i][shape.j] = 0;
 	var x = GetKeyPressed();
 	if (x == 1) {
@@ -335,42 +337,31 @@ function _UpdateGhosts(){
 		val = ghost.prev_val;
 		var Dir = _FindDir(ghost);
 		var new_loc = _CalcNewLoc(Dir, ghost);
-		var flag = _locNotLegit(new_loc);
-		console.log(flag);
-		// while(flag == true){
-		// 	console.log("in while loop");	
-		// 	Dir = _GetRandomDir();
-		// 	new_loc = _CalcNewLoc(Dir, ghost);
-		// 	flag = _locNotLegit(new_loc);
-		// }
-		console.log("$$$$$$$$$$$$$$$$$$$$$$ out while loop");	
 
-		
-		//console.log(new_loc);
+		if (_locNotLegit(new_loc)){
+			Dir = _GetRandomDir(ghost, Dir);
+			new_loc = _CalcNewLoc(Dir, ghost);
+		}
+
 		ghost.prev_val = board[new_loc[0]][new_loc[1]];
-		if (val != 2 && val != 3){
+		if (val != 2 && val != 3 && val != 8){
 			board[ghost.i][ghost.j] = val;
 		}
 		ghost.i = new_loc[0];
 		ghost.j = new_loc[1];
-		// if(board[ghost.i][ghost.j]== 2){
-		// 	_eat_pacmen();
-		// }
+		if(board[ghost.i][ghost.j]== 2){
+			_eat_pacmen();
+		}
 		board[ghost.i][ghost.j] = 3;
 	}
 }
 
 function _locNotLegit(new_loc){
-	console.log("~~~~~~~");
-	if (new_loc[0] >= 9 || new_loc[0] <= 0 || new_loc[1] >= 9 || new_loc[1] <=0){
-		console.log("~~~~1~~~");
+	if (new_loc[0] > 9 || new_loc[0] < 0 || new_loc[1] > 9 || new_loc[1] <0){
 		return true;
-	}else if (board[new_loc[0]][new_loc[1]] == 4 || board[new_loc[0]][new_loc[1]] == 3 || board[new_loc[0]][new_loc[1]] == 2){
-		console.log("~~~~~2~~~~~~");
+	}else if (board[new_loc[0]][new_loc[1]] == 4 || board[new_loc[0]][new_loc[1]] == 3 || board[new_loc[0]][new_loc[1]] == 8){
 		return true;
 	}
-	console.log("~~~~~3~~~~~~");
-
 	return false;
 }
 
@@ -403,16 +394,30 @@ function _CalcNewLoc(Dir, ghost){
 	}
 }
 
-function _GetRandomDir(){
-	directions = ['L', 'R', 'U', 'D'];
-	var dir = directions[Math.floor(Math.random()*directions.length)];
+function _GetRandomDir(ghost, badDir){
+	let directions = [];
+	if (_locNotLegit([ghost.i-1, ghost.j]) == false && badDir != 'L'){ //L
+		directions.push('L');
+	}
+	if (_locNotLegit([ghost.i+1, ghost.j]) == false && badDir != 'R'){ //R
+		directions.push('R');
+	}
+	if (_locNotLegit([ghost.i, ghost.j-1]) == false && badDir != 'U'){ //U
+		directions.push('U');
+	}
+	if (_locNotLegit([ghost.i, ghost.j+1]) == false && badDir != 'D'){ //D
+		directions.push('D');
+	}
+	dir = directions[Math.floor(Math.random()*directions.length)]
+	//console.log(dir, badDir);
 	return dir;
+
 }
 
 function _UpdateSpecialFood(){
 	var random = Math.random();
 	if (random <= 0.25){
-		if (special_food.i+1 <= 9 && board[special_food.i+1][special_food.j] != 4 && board[special_food.i+1][special_food.j] != 2){
+		if (special_food.i+1 <= 9 && board[special_food.i+1][special_food.j] != 4 && board[special_food.i+1][special_food.j] != 2  && board[special_food.i+1][special_food.j] != 3){
 			val = special_food.prev_val;
 			special_food.prev_val = board[special_food.i+1][special_food.j]
 			special_food.i++;
@@ -420,7 +425,7 @@ function _UpdateSpecialFood(){
 			board[special_food.i-1][special_food.j] = val;
 		}
 	}else if (random <= 0.5){
-		if (special_food.i-1 >=0 && board[special_food.i-1][special_food.j] != 4 && board[special_food.i-1][special_food.j] != 2){
+		if (special_food.i-1 >=0 && board[special_food.i-1][special_food.j] != 4 && board[special_food.i-1][special_food.j] != 2  && board[special_food.i-1][special_food.j] != 3){
 			val = special_food.prev_val;
 			special_food.prev_val = board[special_food.i-1][special_food.j]
 			special_food.i--;
@@ -428,7 +433,7 @@ function _UpdateSpecialFood(){
 			board[special_food.i+1][special_food.j] = val;
 		}
 	}else if (random <= 0.75){
-		if (special_food.j-1 >=0 && board[special_food.i][special_food.j-1] != 4 && board[special_food.i][special_food.j-1] != 2){
+		if (special_food.j-1 >=0 && board[special_food.i][special_food.j-1] != 4 && board[special_food.i][special_food.j-1] != 2 && board[special_food.i][special_food.j-1] != 3){
 			val = special_food.prev_val;
 			special_food.prev_val = board[special_food.i][special_food.j-1]
 			special_food.j--;
@@ -436,7 +441,7 @@ function _UpdateSpecialFood(){
 			board[special_food.i][special_food.j+1] = val;
 		}
 	}else{
-		if (special_food.j+1 <= 9 && board[special_food.i][special_food.j+1] != 4 && board[special_food.i][special_food.j+1] != 2){
+		if (special_food.j+1 <= 9 && board[special_food.i][special_food.j+1] != 4 && board[special_food.i][special_food.j+1] != 2 && board[special_food.i][special_food.j+1] != 3){
 			val = special_food.prev_val;
 			special_food.prev_val = board[special_food.i][special_food.j+1]
 			special_food.j++;
@@ -510,12 +515,41 @@ function _draw_ghost(center){
 
 function _eat_pacmen(){
 	alert("OH NO! You have been eaten by a Ghost!");
+	if (lives == 1){
+		//lives --;
+		alert("No more lives! You lost...");
+		Start();
+	}
+	board[shape.i][shape.j] = 0
+
 	if (shape.i == 4 && shape.j == 4){
 		shape.i = 5;
 		shape.j = 5;
 	}else{
 		shape.i = 4;
 		shape.j = 4;
+	}
+	for (let index = 0; index < ghosts.length; index++) {
+		if (index == 0){
+			ghosts[index].i = 0;
+			ghosts[index].j = 0;
+			board[ghosts[index].i][ghosts[index].j] = ghosts[index].prev_val
+		}
+		if (index == 1){
+			ghosts[index].i = 0;
+			ghosts[index].j = 9;
+			board[ghosts[index].i][ghosts[index].j] = ghosts[index].prev_val
+		}
+		if (index == 2){
+			ghosts[index].i = 9;
+			ghosts[index].j = 0;
+			board[ghosts[index].i][ghosts[index].j] = ghosts[index].prev_val
+		}
+		if (index == 3){
+			ghosts[index].i = 9;
+			ghosts[index].j = 9;
+			board[ghosts[index].i][ghosts[index].j] = ghosts[index].prev_val
+		}
 	}
 	UpdatePosition();
 	lives --;
