@@ -44,10 +44,13 @@ var settings={
 	downKey:40,
 	leftKey:37,
 	rightKey:39,
-	numberOfFoods:50,
-	foodColor5:'blue',
-	foodColor15:'yellow',
-	foodColor25:'green',
+	numberOfFoods:10,
+	foodColor5:'#355070',
+	foodColor15:'#65D97A',
+	foodColor25:'#B56576',
+	// foodColor5:'blue',
+	// foodColor15:'yellow',
+	// foodColor25:'green',
 	gameTime:60,
 	numberOfghosts:4
 }
@@ -62,6 +65,22 @@ ghosts = [
 	{i: 9, j:9}
 ]
 
+//images and sounds
+var music = new Audio('music.mp3');
+var ghost_img_path = 'ghost.png';
+var candy_img_path = 'candy.png';
+var wall_img_path = 'wall.jpg';
+
+var ghost_img = document.createElement('img');
+ghost_img.src = ghost_img_path;
+
+var candy_img = document.createElement('img');
+candy_img.src = candy_img_path;
+
+var wall_img = document.createElement('img');
+wall_img.src = wall_img_path;
+
+
 $(document).ready(function() {
 	context = canvas.getContext("2d");
 	Start();
@@ -74,7 +93,9 @@ $(document).ready(function() {
 	else _setScreen('welcome');
 });
 function Start() {
+	play_music();
 	ghosts = ghosts.slice(-settings.numberOfghosts);
+	ghosts_init_loc = [[0,0],[0,9],[9,0],[9,9]].slice(-settings.numberOfghosts);;
 	_createBoard()
 }
 //generate the game board
@@ -87,8 +108,9 @@ function _createBoard(){
 	board = new Array();
 	no_ghosts_board = new Array();
 	score = 0;
+	food_eaten = 0;
 	lives = 5;
-	pac_color = "yellow";
+	pac_color = "#E56B6F";
 	food_remain = settings.numberOfFoods;
 	//var food_eaten = 0;
 	var cnt = 100;//number of cells
@@ -128,16 +150,11 @@ function _createBoard(){
 				board[i][j] = 4; //wall
 				no_ghosts_board[i][j] = 4;
 			} 
-			else if(
-				(i == ghosts[0].i && j == ghosts[0].j) ||
-				(i == ghosts[1].i && j == ghosts[1].j) ||
-				(i == ghosts[2].i && j == ghosts[2].j) ||
-				(i == ghosts[3].i && j == ghosts[3].j) 
-			){
+			else if(ghosts_init_loc.includes([i,j])){
 				board[i][j] = 3;
 			}else if(i == 5 && j == 5){
 				//board[i][j] = 8;
-				//no_ghosts_board[i][j] = 8;
+				no_ghosts_board[i][j] = 0;
 			}else {
 				var randomNum = Math.random();
 				if (randomNum <= (1.0 * food_remain) / cnt) {
@@ -190,12 +207,17 @@ function _createBoard(){
 	//adding left food to the game
 	while (food_remain > 0) {
 		var emptyCell = findRandomEmptyCell(board);//2 dimentional number array
-		board[emptyCell[0]][emptyCell[1]] = 1;
+		board[emptyCell[0]][emptyCell[1]] = 5;
 		food_remain--;
 	}
 
 
 }
+
+function play_music(){
+	music.play();
+}
+
 //add key listeners
 function _addListeners(){
 	keysDown = {};
@@ -217,7 +239,7 @@ function _addListeners(){
 	window.clearInterval(interval_ghosts);
 	window.clearInterval(interval_special_food);
 	interval = setInterval(UpdatePosition, 100);
-	interval_ghosts = setInterval(_UpdateGhosts, 1000);
+	interval_ghosts = setInterval(_UpdateGhosts, 500);
 	interval_special_food = setInterval(_UpdateSpecialFood, 250);
 }
 //return a random 2 dim array
@@ -253,7 +275,7 @@ function Draw() {
 	lblScore.value = score;
 	lblLives.value = lives;
 	lblTime.value = time_elapsed;
-	lblFoods.value = settings.numberOfFoods - food_eaten;
+	//lblFoods.value = settings.numberOfFoods - food_eaten;
 	for (var i = 0; i < 10; i++) {
 		for (var j = 0; j < 10; j++) {
 			var center = new Object();
@@ -266,9 +288,14 @@ function Draw() {
 
 			} else if (board[i][j] == 4) {
 				context.beginPath();
-				context.rect(center.x - 30, center.y - 30, 60, 60);
-				context.fillStyle = "grey"; //color
+				context.drawImage(wall_img, center.x-20, center.y-20, 60, 60)
+				//context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
+				//context.fillStyle = "red"; //color
 				context.fill();
+				// context.beginPath();
+				// context.rect(center.x - 30, center.y - 30, 60, 60);
+				// context.fillStyle = "grey"; //color
+				// context.fill();
 			}else if (board[i][j] == 5) {
 				context.beginPath();
 				context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
@@ -286,8 +313,9 @@ function Draw() {
 				context.fill();
 			}else if (board[i][j] == 8 && special_food.value == 50) {
 				context.beginPath();
-				context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
-				context.fillStyle = "black"; //color
+				context.drawImage(candy_img, center.x-20, center.y-20, 50, 50)
+				//context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
+				//context.fillStyle = "red"; //color
 				context.fill();
 			}
 		}
@@ -355,12 +383,21 @@ function UpdatePosition() { //for pacman character
 	if (prev == 3){
 		_eat_pacmen();
 	}
-	if (score == 1000) {
+	let win = true;
+	for (let y = 0; y < no_ghosts_board.length; y++) {
+		for (let x = 0; x < no_ghosts_board.length; x++) {
+			if (no_ghosts_board[x][y] != 0 && no_ghosts_board[x][y] != 2 && no_ghosts_board[x][y] != 4){
+				win = false
+			}
+		}
+	}
+	if (win) {
 		Draw();
 		window.clearInterval(interval);
 		window.clearInterval(interval_ghosts);
 		window.clearInterval(interval_special_food);
-		window.alert("Game completed");
+		window.alert("You Won!!!");
+		Start();
 	}else if(lives == 0){
 		window.clearInterval(interval);
 		window.clearInterval(interval_ghosts);
@@ -419,11 +456,7 @@ function _initPacLoc(){
 function _UpdateGhosts(){
 	for (let index = 0; index < ghosts.length; index++) {
 		ghost = ghosts[index];
-		if(board[ghost.i][ghost.j] == 2){
-			_eat_pacmen();
-			Draw();
-			return;
-		}
+
 
 		// val = ghost.prev_val;
 		var Dir = _FindDir(ghost);
@@ -433,15 +466,19 @@ function _UpdateGhosts(){
 			Dir = _GetRandomDir(ghost, Dir);
 			new_loc = _CalcNewLoc(Dir, ghost);
 		}
-		curr_val = no_ghosts_board[new_loc[0]][new_loc[1]];
-		board[ghost.i][ghost.j] = curr_val;
+		//curr_val = no_ghosts_board[ghost.i][ghost.j];
+		board[ghost.i][ghost.j] = no_ghosts_board[ghost.i][ghost.j];
 
 		ghost.i = new_loc[0];
 		ghost.j = new_loc[1];
 
 		board[ghost.i][ghost.j] = 3;
 
-	
+		if(board[ghost.i][ghost.j] == 2){
+			_eat_pacmen();
+			Draw();
+			return;
+		}
 	}
 
 	Draw(); //after changing all the ghosts locations
@@ -500,7 +537,6 @@ function _GetRandomDir(ghost, badDir){
 		directions.push('D');
 	}
 	dir = directions[Math.floor(Math.random()*directions.length)]
-	//console.log(dir, badDir);
 	return dir;
 
 }
@@ -597,9 +633,11 @@ function _draw_pacman(center){
 }
 
 function _draw_ghost(center){
+
 	context.beginPath();
-	context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
-	context.fillStyle = "red"; //color
+	context.drawImage(ghost_img, center.x-20, center.y-20, 50, 50)
+	//context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
+	//context.fillStyle = "red"; //color
 	context.fill();
 }
 
