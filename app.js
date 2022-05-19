@@ -7,6 +7,7 @@ var special_food = {
 	value:50
 };
 var board;
+var board_ghosts;
 var score;
 var lives;
 var pac_color;
@@ -73,6 +74,7 @@ function Start() {
 //0:blank , 1: , 2:pacman , 3: ghost , 4:wall , 5:food-5 , 6: food-15 , 7:food-25 , 8:random food - 50
 function _createBoard(){
 	board = new Array();
+	board_ghosts = new Array();
 	score = 0;
 	lives = 5;
 	pac_color = "yellow";
@@ -84,12 +86,12 @@ function _createBoard(){
 	start_time = new Date();
 	for (var i = 0; i < 10; i++) {
 		board[i] = new Array();
+		board_ghosts[i] = new Array();
 		//put obstacles in (i=3,j=3) and (i=3,j=4) and (i=3,j=5), (i=6,j=1) and (i=6,j=2)
 		for (var j = 0; j < 10; j++) {
 			for (let index = 0; index < ghosts.length; index++) {
 				if(i == ghosts[index].i && j == ghosts[index].j){
-					board[i][j] = 3;
-				}
+					board_ghosts[i][j] = 3;
 			}			
 			if (
 				(i == 3 && j == 2) ||
@@ -179,7 +181,7 @@ function _addListeners(){
 		false
 	);
 	interval = setInterval(UpdatePosition, 100);
-	interval_ghosts = setInterval(_updateMovingParts, 400);
+	interval_ghosts = setInterval(_updateMovingParts, 350);
 	// interval_special_food = setInterval(_UpdateSpecialFood, 400);
 }
 
@@ -228,7 +230,7 @@ function Draw() {
 			center.y = j * 60 + 30;
 			if (board[i][j] == 2) {
 				_draw_pacman(center);
-			} else if (board[i][j] == 3) {
+			} else if (board_ghosts[i][j] == 3) {
 				_draw_ghost(center);
 
 			} else if (board[i][j] == 4) {
@@ -296,7 +298,7 @@ function UpdatePosition() {
 			turn = 'R';
 		}
 	}
-	if (board[shape.i][shape.j] == 3) {
+	if (board_ghosts[shape.i][shape.j] == 3) {
 		_eat_pacmen();
 	}else if (board[shape.i][shape.j] == 5) {
 		food_eaten ++;
@@ -324,7 +326,7 @@ function UpdatePosition() {
 		Draw();
 		window.clearInterval(interval);
 		window.clearInterval(interval_ghosts);
-		window.clearInterval(interval_special_food);
+		//window.clearInterval(interval_special_food);
 		window.alert("Hooray! Game completed!");
 	} else {
 		Draw();
@@ -344,6 +346,12 @@ function _UpdateGhosts(){
 		}
 
 		ghost.prev_val = board[new_loc[0]][new_loc[1]];
+		curr_val = board[new_loc[0]][new_loc[1]];
+		if (curr_val == 2){
+			ghost.prev_val = 0;
+		}
+		console.log(ghost.prev_val);
+		board_ghosts[ghost.i][ghost.j] = 0;
 		if (val != 2 && val != 3 && val != 8){
 			board[ghost.i][ghost.j] = val;
 		}
@@ -352,14 +360,14 @@ function _UpdateGhosts(){
 		if(board[ghost.i][ghost.j]== 2){
 			_eat_pacmen();
 		}
-		board[ghost.i][ghost.j] = 3;
+		board_ghosts[ghost.i][ghost.j] = 3;
 	}
 }
 
 function _locNotLegit(new_loc){
 	if (new_loc[0] > 9 || new_loc[0] < 0 || new_loc[1] > 9 || new_loc[1] <0){
 		return true;
-	}else if (board[new_loc[0]][new_loc[1]] == 4 || board[new_loc[0]][new_loc[1]] == 3 || board[new_loc[0]][new_loc[1]] == 8){
+	}else if (board[new_loc[0]][new_loc[1]] == 4 || board_ghosts[new_loc[0]][new_loc[1]] == 3 || board[new_loc[0]][new_loc[1]] == 8){
 		return true;
 	}
 	return false;
@@ -417,7 +425,7 @@ function _GetRandomDir(ghost, badDir){
 function _UpdateSpecialFood(){
 	var random = Math.random();
 	if (random <= 0.25){
-		if (special_food.i+1 <= 9 && board[special_food.i+1][special_food.j] != 4 && board[special_food.i+1][special_food.j] != 2  && board[special_food.i+1][special_food.j] != 3){
+		if (special_food.i+1 <= 9 && board[special_food.i+1][special_food.j] != 4 && board[special_food.i+1][special_food.j] != 2  && board_ghosts[special_food.i+1][special_food.j] != 3){
 			val = special_food.prev_val;
 			special_food.prev_val = board[special_food.i+1][special_food.j]
 			special_food.i++;
@@ -425,7 +433,7 @@ function _UpdateSpecialFood(){
 			board[special_food.i-1][special_food.j] = val;
 		}
 	}else if (random <= 0.5){
-		if (special_food.i-1 >=0 && board[special_food.i-1][special_food.j] != 4 && board[special_food.i-1][special_food.j] != 2  && board[special_food.i-1][special_food.j] != 3){
+		if (special_food.i-1 >=0 && board[special_food.i-1][special_food.j] != 4 && board[special_food.i-1][special_food.j] != 2  && board_ghosts[special_food.i-1][special_food.j] != 3){
 			val = special_food.prev_val;
 			special_food.prev_val = board[special_food.i-1][special_food.j]
 			special_food.i--;
@@ -433,7 +441,7 @@ function _UpdateSpecialFood(){
 			board[special_food.i+1][special_food.j] = val;
 		}
 	}else if (random <= 0.75){
-		if (special_food.j-1 >=0 && board[special_food.i][special_food.j-1] != 4 && board[special_food.i][special_food.j-1] != 2 && board[special_food.i][special_food.j-1] != 3){
+		if (special_food.j-1 >=0 && board[special_food.i][special_food.j-1] != 4 && board[special_food.i][special_food.j-1] != 2 && board_ghosts[special_food.i][special_food.j-1] != 3){
 			val = special_food.prev_val;
 			special_food.prev_val = board[special_food.i][special_food.j-1]
 			special_food.j--;
@@ -441,7 +449,7 @@ function _UpdateSpecialFood(){
 			board[special_food.i][special_food.j+1] = val;
 		}
 	}else{
-		if (special_food.j+1 <= 9 && board[special_food.i][special_food.j+1] != 4 && board[special_food.i][special_food.j+1] != 2 && board[special_food.i][special_food.j+1] != 3){
+		if (special_food.j+1 <= 9 && board[special_food.i][special_food.j+1] != 4 && board[special_food.i][special_food.j+1] != 2 && board_ghosts[special_food.i][special_food.j+1] != 3){
 			val = special_food.prev_val;
 			special_food.prev_val = board[special_food.i][special_food.j+1]
 			special_food.j++;
@@ -517,7 +525,27 @@ function _eat_pacmen(){
 	alert("OH NO! You have been eaten by a Ghost!");
 	if (lives == 1){
 		//lives --;
+		// for (let index = 0; index < ghosts.length; index++) {
+		// 	board_ghosts[ghosts[index].i][ghosts[index].j] = 0;
+		// 	if (index == 0){
+		// 		ghosts[index].i = 0;
+		// 		ghosts[index].j = 0;
+		// 	}
+		// 	if (index == 1){
+		// 		ghosts[index].i = 0;
+		// 		ghosts[index].j = 9;
+		// 	}
+		// 	if (index == 2){
+		// 		ghosts[index].i = 9;
+		// 		ghosts[index].j = 0;
+		// 	}
+		// 	if (index == 3){
+		// 		ghosts[index].i = 9;
+		// 		ghosts[index].j = 9;
+		// 	}
+		// }
 		alert("No more lives! You lost...");
+		_UpdateGhosts();
 		Start();
 	}
 	board[shape.i][shape.j] = 0
@@ -554,6 +582,14 @@ function _eat_pacmen(){
 	UpdatePosition();
 	lives --;
 }
+
+// function _clear_ghostsBoard(){
+// 	board_ghosts = new Array();
+// 	for (let index = 0; index < ghosts.length; index++) {
+// 		if(i == ghosts[index].i && j == ghosts[index].j){
+// 			board_ghosts[i][j] = 3;
+// 	}	
+// }
 
 function _setScreen(screen){
 	_displayNoneAllScreens()
