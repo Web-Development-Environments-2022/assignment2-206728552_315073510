@@ -92,6 +92,9 @@ function _createBoard(){
 			for (let index = 0; index < ghosts.length; index++) {
 				if(i == ghosts[index].i && j == ghosts[index].j){
 					board_ghosts[i][j] = 3;
+				}else{
+					board_ghosts[i][j] = 0;
+				}
 			}			
 			if (
 				(i == 3 && j == 2) ||
@@ -180,13 +183,16 @@ function _addListeners(){
 		},
 		false
 	);
-	interval = setInterval(UpdatePosition, 100);
-	interval_ghosts = setInterval(_updateMovingParts, 350);
+	interval = setInterval(_UpdatePositions, 200);
+
 	// interval_special_food = setInterval(_UpdateSpecialFood, 400);
 }
 
-function _updateMovingParts(){
+function _UpdatePositions(){
+	UpdatePosition()
+	console.log(board_ghosts)
 	_UpdateGhosts();
+	console.log(board_ghosts)
 	_UpdateSpecialFood();
 }
 //return a random 2 dim array
@@ -264,6 +270,7 @@ function Draw() {
 }
 
 function UpdatePosition() {
+
 	if (lblTime.value >= settings.gameTime){
 		alert("Time is up! You lost...");
 		Start();
@@ -350,7 +357,7 @@ function _UpdateGhosts(){
 		if (curr_val == 2){
 			ghost.prev_val = 0;
 		}
-		console.log(ghost.prev_val);
+		//console.log(ghost.prev_val);
 		board_ghosts[ghost.i][ghost.j] = 0;
 		if (val != 2 && val != 3 && val != 8){
 			board[ghost.i][ghost.j] = val;
@@ -524,26 +531,21 @@ function _draw_ghost(center){
 function _eat_pacmen(){
 	alert("OH NO! You have been eaten by a Ghost!");
 	if (lives == 1){
-		//lives --;
-		// for (let index = 0; index < ghosts.length; index++) {
-		// 	board_ghosts[ghosts[index].i][ghosts[index].j] = 0;
-		// 	if (index == 0){
-		// 		ghosts[index].i = 0;
-		// 		ghosts[index].j = 0;
-		// 	}
-		// 	if (index == 1){
-		// 		ghosts[index].i = 0;
-		// 		ghosts[index].j = 9;
-		// 	}
-		// 	if (index == 2){
-		// 		ghosts[index].i = 9;
-		// 		ghosts[index].j = 0;
-		// 	}
-		// 	if (index == 3){
-		// 		ghosts[index].i = 9;
-		// 		ghosts[index].j = 9;
-		// 	}
-		// }
+		for (var i = 0; i < 10; i++) {
+			board[i] = new Array();
+			board_ghosts[i] = new Array();
+
+
+			for (var j = 0; j < 10; j++) {
+				for (let index = 0; index < ghosts.length; index++) {
+					if(i == ghosts[index].i && j == ghosts[index].j){
+						board_ghosts[i][j] = 3;
+					}else{
+						board_ghosts[i][j] = 0;
+					}
+				}
+		}
+	}
 		alert("No more lives! You lost...");
 		_UpdateGhosts();
 		Start();
@@ -557,38 +559,26 @@ function _eat_pacmen(){
 		shape.i = 4;
 		shape.j = 4;
 	}
-	for (let index = 0; index < ghosts.length; index++) {
-		if (index == 0){
-			ghosts[index].i = 0;
-			ghosts[index].j = 0;
-			board[ghosts[index].i][ghosts[index].j] = ghosts[index].prev_val
-		}
-		if (index == 1){
-			ghosts[index].i = 0;
-			ghosts[index].j = 9;
-			board[ghosts[index].i][ghosts[index].j] = ghosts[index].prev_val
-		}
-		if (index == 2){
-			ghosts[index].i = 9;
-			ghosts[index].j = 0;
-			board[ghosts[index].i][ghosts[index].j] = ghosts[index].prev_val
-		}
-		if (index == 3){
-			ghosts[index].i = 9;
-			ghosts[index].j = 9;
-			board[ghosts[index].i][ghosts[index].j] = ghosts[index].prev_val
+
+	for(let i=0;i<10;i++){
+		for(let j=0;j<10;j++){
+			board_ghosts[i][j]=0
 		}
 	}
+
+	ghosts = [];
+	ghosts[0] = {i:0, j:0, prev_val:0, last_move:'R', walk_len:0, stuck:true};
+	ghosts[1] = {i:0, j:9, prev_val:0, last_move:'L', walk_len:0, stuck:true};
+	ghosts[2] = {i:9, j:0, prev_val:0, last_move:'R', walk_len:0, stuck:true};
+	ghosts[3] = {i:9, j:9, prev_val:0, last_move:'L', walk_len:0, stuck:true};
+	ghosts = ghosts.slice(-settings.numberOfghosts);
+
 	UpdatePosition();
 	lives --;
 }
 
 // function _clear_ghostsBoard(){
-// 	board_ghosts = new Array();
-// 	for (let index = 0; index < ghosts.length; index++) {
-// 		if(i == ghosts[index].i && j == ghosts[index].j){
-// 			board_ghosts[i][j] = 3;
-// 	}	
+// 	boar
 // }
 
 function _setScreen(screen){
