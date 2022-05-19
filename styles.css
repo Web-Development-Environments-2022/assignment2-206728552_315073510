@@ -11,6 +11,7 @@
     color: white;
     font-size: 40px;
     
+    
 }
 #header{
     background-color: #028498;
@@ -148,6 +149,16 @@ span{
 }
 .def-food{
     width: 300px !important;
+}
+#userInfo{
+    align-self: flex-start;
+    position: relative;
+    /* left: -730px;
+    top:100px; */
+    margin-left: 20px;
+    color: white;
+    font-family:Verdana, Tahoma, sans-serif;
+    
 }
 #start-game{
     width: 200px;
