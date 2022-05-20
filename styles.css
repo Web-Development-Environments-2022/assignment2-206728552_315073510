@@ -176,17 +176,17 @@ span{
 #status-div-div{
     margin-top: 20px;
     padding-top: 30px;
-    height: 300px;
-    width: 160px;
+    height: 350px;
+    width: 200px;
     background-color: white;
-    box-shadow: 0px 0px 10px  rgb(236, 236, 236);;
+    box-shadow: 0px 0px 10px  rgb(236, 236, 236);
 }
 #game-stats{
     display: flex;
     flex-direction: column;
     position: relative;
     top: 30px;
-    right: 190px;
+    right: 210px;
 }
 #game_screen{
     display: flex;
@@ -209,4 +209,23 @@ span{
     font-size: 20px;
     text-decoration: underline;
     color:darkslateblue;
+}
+#random-color-btn{
+    position: relative;
+    right: 3px;
+    width: 150px;
+    margin-bottom: 5px;
+    margin-left: 10px;
+    background-color: #745d0a;
+    border-radius: 25px;
+    height: 25px;
+    color: white;
+    border: none;
+
+}
+.footer-div{
+    min-height: 200px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: end;
 }

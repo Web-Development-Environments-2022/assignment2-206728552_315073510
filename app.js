@@ -64,14 +64,16 @@ var keyUpFoo=function(e) {
 };
 //ghosts array init
 ghosts = [
-	{i: 0, j:0},
-	{i: 0, j:9},
-	{i: 9, j:0},
-	{i: 9, j:9}
+	{i: 0, j:0,super:true},
+	{i: 0, j:9,super:false},
+	{i: 9, j:0,super:false},
+	{i: 9, j:9,super:false}
 ]
+
 
 //images and sounds
 var music = new Audio('music.mp3');
+music.volume=0.01
 var ghost_img_path = 'ghost2.png';
 var candy_img_path = 'cherry.png';
 var wall_img_path = 'wall.jpg';
@@ -98,10 +100,19 @@ $(document).ready(function() {
 	else _setScreen('welcome');
 });
 function Start() {
+	
 	play_music();
-	ghosts = ghosts.slice(-settings.numberOfghosts);
-	ghosts_init_loc = [[0,0],[0,9],[9,0],[9,9]].slice(-settings.numberOfghosts);;
+
+	ghosts_init_loc = [[0,0],[0,9],[9,0],[9,9]].slice(-settings.numberOfghosts);
+	
+	ghosts = [
+		{i: 0, j:0,super:true},
+		{i: 0, j:9,super:false},
+		{i: 9, j:0,super:false},
+		{i: 9, j:9,super:false}
+	].slice(-settings.numberOfghosts)
 	_createBoard()
+	// Draw()
 }
 //generate the game board
 //0:blank , 2:pacman , 3: ghost , 4:wall , 5:food-5 , 6: food-15 , 7:food-25 , 8:random food - 50
@@ -109,7 +120,6 @@ function _createBoard(){
 
 	_addListeners() 	//clear intervals before each start of the game (like loosing) and start new intervals
 
-	//TODO: music
 
 	board = new Array();
 	no_ghosts_board = new Array();
@@ -224,11 +234,15 @@ function _createBoard(){
 }
 
 function play_music(){
+	music.volume=0.01
+	music.currentTime = 0
 	music.play();
 }
 
 //add key listeners
 function _addListeners(){
+	window.removeEventListener('keydown',keyDownFoo);
+	window.removeEventListener('keyup',keyUpFoo);
 	keysDown = {};
 	addEventListener(
 		"keydown",
@@ -240,9 +254,15 @@ function _addListeners(){
 		keyUpFoo,
 		false
 	);
+	_clearIntervals()
+	setIntervals()
+}
+function _clearIntervals(){
 	window.clearInterval(interval);
 	window.clearInterval(interval_ghosts);
 	window.clearInterval(interval_special_food);
+}
+function setIntervals(){
 	interval = setInterval(UpdatePosition, 100);
 	interval_ghosts = setInterval(_UpdateGhosts, 500);
 	interval_special_food = setInterval(_UpdateSpecialFood, 250);
@@ -289,8 +309,7 @@ function Draw() {
 			if (board[i][j] == 2) {
 				_draw_pacman(center);
 			} else if (board[i][j] == 3) {
-				_draw_ghost(center);
-
+				_draw_ghost(center,i,j);
 			} else if (board[i][j] == 4) {
 				context.beginPath();
 				context.drawImage(wall_img, center.x-20, center.y-20, 60, 60)
@@ -407,6 +426,7 @@ function UpdatePosition() { //for pacman character
 		window.clearInterval(interval);
 		window.clearInterval(interval_ghosts);
 		window.clearInterval(interval_special_food);
+		music.pause();
 		window.alert("You Lost! no more lives...");
 		Start();
 	}else if(time_elapsed <= 0){
@@ -446,8 +466,9 @@ function _initPacLoc(){
 	board[special_food.i][special_food.j]=no_ghosts_board[special_food.i][special_food.j] //"erase" final location of specal food 
 
 	cell1 = findRandomEmptyCell(board);
-	shape.i = cell1[0];
-	shape.j = cell1[1];
+	shape.i = 5//cell1[0];
+	shape.j = 6//cell1[1];
+	turn='R'
 
 	board[shape.i][shape.j]=2 //put the pacman again in his initial placecs
 	no_ghosts_board[shape.i][shape.j]=2 //put the pacman again in his initial placecs
@@ -478,8 +499,8 @@ function _UpdateGhosts(){
 		ghost.j = new_loc[1];
 
 		board[ghost.i][ghost.j] = 3;
-
-		if(board[ghost.i][ghost.j] == 2){
+		
+		if(ghost.i==shape.i && ghost.j==shape.j){
 			_eat_pacmen();
 			Draw();
 			return;
@@ -499,20 +520,57 @@ function _locNotLegit(new_loc){
 }
 
 function _FindDir(ghost){
-	const directions = ['L', 'R', 'U', 'D'];
-	if (ghost.i - shape.i > 0) {//not right
-		if (ghost.j - shape.j > 0){ //not down
-			if (ghost.i - shape.i > ghost.j - shape.j){ //not up
+	let bestDistance=Number.POSITIVE_INFINITY
+	let res='U';
+	let shapePos=[shape.i,shape.j]
+	if(getManhetenDistance(shapePos,[ghost.i+1,ghost.j])<bestDistance && !isWall([ghost.i+1,ghost.j])){
+		bestDistance=getManhetenDistance(shapePos,[ghost.i+1,ghost.j])
+		res='R'
+	}
+	if(getManhetenDistance(shapePos,[ghost.i,ghost.j+1])<bestDistance && !isWall([ghost.i,ghost.j+1])){
+		bestDistance=getManhetenDistance(shapePos,[ghost.i+1,ghost.j])
+		res='D'
+	}
+	if(getManhetenDistance(shapePos,[ghost.i,ghost.j-1])<bestDistance && !isWall([ghost.i,ghost.j-1])){
+		bestDistance=getManhetenDistance(shapePos,[ghost.i,ghost.j-1])
+		res='U'
+	}
+	if(getManhetenDistance(shapePos,[ghost.i-1,ghost.j])<bestDistance && !isWall([ghost.i-1,ghost.j])){
+		getManhetenDistance(shapePos,[ghost.i-1,ghost.j])
+		res='L'
+	}
+	return res;
+	if (ghost.i - shape.i > 0) {
+		//pacmen is left to ghost
+		if (ghost.j - shape.j > 0){
+			//pacmen is up to ghost
+			if (ghost.i - shape.i > ghost.j - shape.j){ 
+				//pacmen is far left then up to ghost
 				return 'L'
 			}else{
 				return 'U'
 			}
 		}else{
+			//pacmen is down to ghost
 			return 'D'
 		}
 	}else{
+		//pacmen is right to ghost
 		return 'R'
 	}
+}
+function isWall(p){
+	if(p[0]<0 || p[0]>9){
+		return false
+	}
+	if(p[1]<0 || p[1]>9){
+		return false
+	}
+	return board[p[0]][p[1]]==4
+}
+
+function getManhetenDistance(p1,p2){
+	return Math.abs(p1[0]-p2[0]) + Math.abs(p1[1]-p2[1]);
 }
 
 function _CalcNewLoc(Dir, ghost){
@@ -639,21 +697,28 @@ function _draw_pacman(center){
 
 }
 
-function _draw_ghost(center){
-
+function _draw_ghost(center,i,j){
+	ghost=ghosts.find(g=>g.i==i && g.j==j)
 	context.beginPath();
-	context.drawImage(ghost_img, center.x-20, center.y-20, 50, 50)
+	if(ghost.super){
+		context.drawImage(ghost_img, center.x-20, center.y-20, 50, 50)
+	}
+	else{
+		context.drawImage(ghost_img, center.x-20, center.y-20, 50, 50)
+	}
+	
 	//context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
 	//context.fillStyle = "red"; //color
 	context.fill();
 }
 
 function _eat_pacmen(){
-	window.removeEventListener('keydown',keyDownFoo);
-	window.removeEventListener('keyup',keyUpFoo);
+
 	_addListeners() 
 	alert("OH NO! You've been eaten by a ghost");
 	lives --;
+	score=score-10;
+	
 	_initGhostLoc();
 	_initPacLoc();
 	Draw();
@@ -662,16 +727,20 @@ function _eat_pacmen(){
 function _setScreen(screen){
 	_displayNoneAllScreens()
 	if(screen==='welcome'){
+		onExitGameGame()
 		_displayScreen('welcome_screen')
 	}
 	else if(screen==='register'){
+		onExitGameGame()
 		_displayScreen('register_screen')
 	}
 	else if(screen==='log_in'){
+		onExitGameGame()
 		_displayScreen('log_in_screen')
 	
 	}
 	else if(screen==='settings'){
+		onExitGameGame()
 		_displayScreen('settings_screen')
 		$('#status-div-div').css('display','flex')
 		$('#status-div-div').css('flex-direction','column')
@@ -687,6 +756,8 @@ function _setScreen(screen){
 	}
 
 }
+
+
 function _displayScreen(screen){
 	document.getElementById(screen).style.display='flex'
 	document.getElementById(screen).style.justifyContent='center'
@@ -883,6 +954,17 @@ function _goRightDef(){
 	addEventListener('keydown',foo );
 
 }
+function randomColors(){
+	let food5='#'+(0x1000000+Math.random()*0xffffff).toString(16).substr(1,6)
+	let food15='#'+(0x1000000+Math.random()*0xffffff).toString(16).substr(1,6)
+	let food25='#'+(0x1000000+Math.random()*0xffffff).toString(16).substr(1,6)
+	$('#5p-input').val(food5)
+	$('#15p-input').val(food15)
+	$('#25p-input').val(food25)
+	settings.foodColor5=food5
+	settings.foodColor15=food15
+	settings.foodColor25=food25
+}
 function on5pColorChange(val){
 	settings.foodColor5=val
 	_setDisplayedSettings()
@@ -906,6 +988,16 @@ function onGameTimeChange(val){
 	_setDisplayedSettings()
 	
 }
+function onGhostAmountChange(val){
+	if(val<1 || val>4){
+		alert('Ghosts Quantity should be 1-4');
+		$('#ghosts-input').val(4)
+	}
+	else{
+		settings.numberOfghosts=parseInt(val)
+	}
+	_setDisplayedSettings()
+}
 function onFoodPointsChange(val){
 
 	if(val<50){
@@ -928,12 +1020,13 @@ function _setDisplayedSettings(){
 	'<div style="margin-bottom:8px;"> Left: '+_asciiToChar(settings.leftKey)+'</div>'+
 	'<div style="margin-bottom:8px;"> up: '+_asciiToChar(settings.upKey)+'</div>'+
 	'<div style="margin-bottom:8px;"> Down: '+_asciiToChar(settings.downKey)+'</div>'+
-	'<div style="margin-bottom:8px;"> Right: '+_asciiToChar(settings.rightKey)+'</div>'
-	'<div style="margin-bottom:8px;"> 5 points food: '+settings.foodColor5+'</div>'+
-	'<div style="margin-bottom:8px;"> 15 points food: '+settings.foodColor15+'</div>'+
-	'<div style="margin-bottom:8px;"> 25 points food: '+settings.foodColor25+'</div>'+
+	'<div style="margin-bottom:8px;"> Right: '+_asciiToChar(settings.rightKey)+'</div>'+
+	'<div style="margin-bottom:8px;"> 5 points food color: '+settings.foodColor5+'</div>'+
+	'<div style="margin-bottom:8px;"> 15 points food color: '+settings.foodColor15+'</div>'+
+	'<div style="margin-bottom:8px;"> 25 points food color: '+settings.foodColor25+'</div>'+
 	'<div style="margin-bottom:8px;"> Game Time: '+settings.gameTime+'</div>'+
 	'<div style="margin-bottom:8px;"> Number of foods in game: '+settings.numberOfFoods+'</div>'+
+	'<div style="margin-bottom:8px;"> Number of ghosts: '+settings.numberOfghosts+'</div>'
 
 	// status='<div>aa</div>'
 	$('#status-div').html(status)
@@ -943,7 +1036,7 @@ function _setDisplayedSettings(){
 function startGame(){
 
 	_setScreen('game')
-	
+	Start();
 	$('#status-div-div').css('position','relative')
 	$('#status-div-div').css('top','150px')
 	
@@ -953,4 +1046,10 @@ function _setUserIndex(username){
 		'<i class="glyphicon glyphicon-user" style="margin-right: 15px;"></i>'+
 		username
 		)
+}
+function onExitGameGame(){
+	$('#status-div-div').css('top','0px')
+	_clearIntervals()
+	music.pause()
+	// document.getElementById('game_screen').removeChild('game');
 }

@@ -85,7 +85,8 @@
 			<div id="settings-status-div">
 				<div id="settings_screen" class="screen">
 					<div id="def-inputs">
-						<span class="def-txt margin-buttom-10">Define colors</span>
+							<span class="def-txt margin-buttom-10">Define colors</span>
+						
 						<div class="input-div">
 							<span>5 point food color: </span>
 							<input class="coupled-input" type="text" id="5p-input" value="#355070" onchange="on5pColorChange(this.value)">
@@ -98,6 +99,7 @@
 							<span>25 point food color: </span>
 							<input class="coupled-input" type="text" id="25p-input" value="#B56576" onchange="on25pColorChange(this.value)">
 						</div>
+						<button  id="random-color-btn" onclick="randomColors()">Random Colors</button>
 						<span class="def-txt margin-buttom-10">Define Game Time</span>
 						<div class="input-div">
 							<span>Game Time: </span>
@@ -107,6 +109,11 @@
 						<div class="input-div">
 							<span>Food Points: </span>
 							<input class="coupled-input" type="text" id="food-points-input" value="50" onchange="onFoodPointsChange(this.value)">
+						</div>
+						<span class="def-txt margin-buttom-10 def-food">Define Number Of Monsters</span>
+						<div class="input-div">
+							<span>Number Of Monsters: </span>
+							<input class="coupled-input" type="text" id="ghosts-input" value="4" onchange="onGhostAmountChange(this.value)">
 						</div>
 					</div>
 					<div id="key-div" >
@@ -167,5 +174,7 @@
 		</div>
 		
 	</body>
+	<div class="footer-div">
 	<footer style="text-align:end;margin-right: 20px;">Contact Us: Moshayof@post.bgu.ac.il</footer>
+</div>
 </html>
