@@ -15,6 +15,7 @@
 }
 #header{
     background-color: #028498;
+    height: 90px;
 }
 .screen{
     display: none;
@@ -157,6 +158,7 @@ span{
 #userInfo{
     align-self: flex-start;
     position: relative;
+    top: -25px;
     /* left: -730px;
     top:100px; */
     margin-left: 20px;
@@ -184,15 +186,18 @@ span{
     flex-direction: column;
     position: relative;
     top: 30px;
-    right: 200px;
+    right: 190px;
 }
 #game_screen{
     display: flex;
     flex-direction: column;
+    position: relative;
+    left: 50px;
 }
 #game{
     position: relative;
-    top:-60px
+    top:-90px;
+    border:1px solid #eaeaea;
 }
 #key-div{
     margin-left: 30px;

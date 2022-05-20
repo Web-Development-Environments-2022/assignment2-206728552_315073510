@@ -88,15 +88,15 @@
 						<span class="def-txt margin-buttom-10">Define colors</span>
 						<div class="input-div">
 							<span>5 point food color: </span>
-							<input class="coupled-input" type="text" id="5p-input" value="blue" onchange="on5pColorChange(this.value)">
+							<input class="coupled-input" type="text" id="5p-input" value="#355070" onchange="on5pColorChange(this.value)">
 						</div>
 						<div class="input-div">
 							<span>15 point food color: </span>
-							<input class="coupled-input" type="text" id="15p-input" value="yellow" onchange="on15pColorChange(this.value)">
+							<input class="coupled-input" type="text" id="15p-input" value="#65D97A" onchange="on15pColorChange(this.value)">
 						</div>
 						<div class="input-div">
 							<span>25 point food color: </span>
-							<input class="coupled-input" type="text" id="25p-input" value="green" onchange="on25pColorChange(this.value)">
+							<input class="coupled-input" type="text" id="25p-input" value="#B56576" onchange="on25pColorChange(this.value)">
 						</div>
 						<span class="def-txt margin-buttom-10">Define Game Time</span>
 						<div class="input-div">
@@ -123,7 +123,7 @@
 					
 					
 				</div>
-				<div id="status-div-div">
+				<div id="status-div-div" >
 						<div id="status-title">Keys</div>
 						<div id="status-div"></div>
 				</div>
@@ -134,16 +134,23 @@
 					<div id="game-stats">
 						<div id="score">
 							<label for="lblScore">SCORE:</label>
-							<input id="lblScore" type="text" style="width: 30px;" />
+							<input id="lblScore" type="text" style="width: 50px;" />
 						</div>
 						<div id="time">
-							<label for="lblTime">TIME:</label>
-							<input id="lblTime" type="text" style="width: 80px;" />
+							<label for="lblTime" >TIME:</label>
+							<input id="lblTime" type="text" style="width: 50px;margin-left:16px" />
 						</div>
-					</div>
-					<div id="game">
-						<canvas id="canvas" height="600" width="600"></canvas>
-					</div>
+						<div id="lives">
+							<label for="lblLives">Lives:</label>
+							<input id="lblLives" type="text" style="width: 50px;margin-left:14px" />
+						</div>
+						<!-- <div id="foods">
+							<label for="lblFoods">Left Foods:</label>
+							<input id="lblFoods" type="text" /> -->
+						</div>
+						<div id="game">
+							<canvas id="canvas" height="600" width="600"></canvas>
+						</div>
 					
 				</div>
 			</div>
