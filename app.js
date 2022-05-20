@@ -6,6 +6,7 @@ var special_food = {
 	prev_val:0,
 	value:50
 };
+
 var board;
 var no_ghosts_board;
 var score;
@@ -75,11 +76,17 @@ ghosts = [
 var music = new Audio('music.mp3');
 music.volume=0.01
 var ghost_img_path = 'ghost2.png';
+var superGhost_img_path = 'superGhost.png';
 var candy_img_path = 'cherry.png';
 var wall_img_path = 'wall.jpg';
+var med_img_path = 'med.png';
+
+var superGhost_img = document.createElement('img');
+superGhost_img.src = superGhost_img_path;
 
 var ghost_img = document.createElement('img');
 ghost_img.src = ghost_img_path;
+
 
 var candy_img = document.createElement('img');
 candy_img.src = candy_img_path;
@@ -87,6 +94,8 @@ candy_img.src = candy_img_path;
 var wall_img = document.createElement('img');
 wall_img.src = wall_img_path;
 
+var med_img = document.createElement('img');
+med_img.src = med_img_path;
 
 $(document).ready(function() {
 	context = canvas.getContext("2d");
@@ -128,6 +137,7 @@ function _createBoard(){
 	lives = 5;
 	pac_color = "yellow";
 	food_remain = settings.numberOfFoods;
+	med_remain = 1;
 	//var food_eaten = 0;
 	var cnt = 100;//number of cells
 	var pacman_remain = 1;
@@ -172,10 +182,17 @@ function _createBoard(){
 			}else if(i == 5 && j == 5){
 				//board[i][j] = 8;
 				no_ghosts_board[i][j] = 0;
+			}else if(i ==3 && j == 3){
+				if (med_remain == 1){
+					med_remain--;
+					board[i][j] = 1;
+					no_ghosts_board[i][j] = 1;
+				}
 			}else {
-				
+
 				var randomNum = Math.random();
 				if (randomNum <= (1.0 * food_remain) / cnt) {
+
 					food_remain--;
 					var randomFood = Math.random();
 					if (randomFood <= 0.6){
@@ -229,7 +246,6 @@ function _createBoard(){
 		board[emptyCell[0]][emptyCell[1]] = 5;
 		food_remain--;
 	}
-
 
 }
 
@@ -341,6 +357,12 @@ function Draw() {
 				//context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
 				//context.fillStyle = "red"; //color
 				context.fill();
+			}else if (board[i][j] == 1) {
+				context.beginPath();
+				context.drawImage(med_img, center.x-20, center.y-20, 50, 50)
+				//context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
+				//context.fillStyle = "red"; //color
+				context.fill();
 			}
 		}
 	}
@@ -396,6 +418,9 @@ function UpdatePosition() { //for pacman character
 		special_food.value=0;
 		score+=50;
 		window.clearInterval(interval_special_food);
+	}else if(board[shape.i][shape.j] == 1){
+		console.log(lives);
+		lives ++;
 	}
 	prev = board[shape.i][shape.j]
 	board[shape.i][shape.j] = 2;//new place
@@ -405,7 +430,8 @@ function UpdatePosition() { //for pacman character
 		pac_color = "green";
 	}
 	if (prev == 3){
-		_eat_pacmen();
+		isSuper = ghosts[0].i == shape.i && ghosts[0].j == shape.j;
+		_eat_pacmen(isSuper);
 	}
 	let win = true;
 	for (let y = 0; y < no_ghosts_board.length; y++) {
@@ -420,20 +446,24 @@ function UpdatePosition() { //for pacman character
 		window.clearInterval(interval);
 		window.clearInterval(interval_ghosts);
 		window.clearInterval(interval_special_food);
-		window.alert("You Won!!!");
+		window.alert("Winner!!!");
 		Start();
 	}else if(lives == 0){
 		window.clearInterval(interval);
 		window.clearInterval(interval_ghosts);
 		window.clearInterval(interval_special_food);
 		music.pause();
-		window.alert("You Lost! no more lives...");
+		window.alert("Loser!");
 		Start();
 	}else if(time_elapsed <= 0){
 		window.clearInterval(interval);
 		window.clearInterval(interval_ghosts);
 		window.clearInterval(interval_special_food);
-		window.alert("You Lost! time is up...");
+		if (score < 100){
+			window.alert("You are better than " + score + " points!");
+		}else{
+			window.alert("Time is up!");
+		}
 		Start();
 	} else {
 		Draw();
@@ -446,10 +476,10 @@ function _initGhostLoc(){
 		
 	}
 	ghosts = [
-		{i: 0, j:0},
-		{i: 0, j:9},
-		{i: 9, j:0},
-		{i: 9, j:9}
+		{i: 0, j:0,super:true},
+		{i: 0, j:9,super:false},
+		{i: 9, j:0,super:false},
+		{i: 9, j:9,super:false}
 	].slice(-settings.numberOfghosts);
 
 	for (let index = 0; index < ghosts.length; index++) {
@@ -501,7 +531,7 @@ function _UpdateGhosts(){
 		board[ghost.i][ghost.j] = 3;
 		
 		if(ghost.i==shape.i && ghost.j==shape.j){
-			_eat_pacmen();
+			_eat_pacmen(ghost.super);
 			Draw();
 			return;
 		}
@@ -701,7 +731,7 @@ function _draw_ghost(center,i,j){
 	ghost=ghosts.find(g=>g.i==i && g.j==j)
 	context.beginPath();
 	if(ghost.super){
-		context.drawImage(ghost_img, center.x-20, center.y-20, 50, 50)
+		context.drawImage(superGhost_img, center.x-20, center.y-20, 50, 50)
 	}
 	else{
 		context.drawImage(ghost_img, center.x-20, center.y-20, 50, 50)
@@ -712,12 +742,16 @@ function _draw_ghost(center,i,j){
 	context.fill();
 }
 
-function _eat_pacmen(){
+function _eat_pacmen(isSuper){
 
 	_addListeners() 
-	alert("OH NO! You've been eaten by a ghost");
+	//alert("OH NO! You've been eaten by a ghost");
 	lives --;
-	score=score-10;
+	if (isSuper){
+		score=score-50;
+	}else{
+		score=score-10;
+	}
 	
 	_initGhostLoc();
 	_initPacLoc();
