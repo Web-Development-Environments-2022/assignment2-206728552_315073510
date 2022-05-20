@@ -456,11 +456,15 @@ function _setScreen(screen){
 	}
 	else if(screen==='settings'){
 		_displayScreen('settings_screen')
+		$('#status-div-div').css('display','flex')
+		$('#status-div-div').css('flex-direction','column')
 		_setDisplayedSettings()
 		
 	}
 	else if(screen==='game'){
 		_displayScreen('game_screen')
+		$('#status-div-div').css('display','flex')
+		$('#status-div-div').css('flex-direction','column')
 		
 	}
 
@@ -472,6 +476,7 @@ function _displayScreen(screen){
 function _displayNoneAllScreens(){
 	document.getElementById('welcome_screen').style.display='none'
 	document.getElementById('register_screen').style.display='none'
+	$('#status-div-div').css('display','none')
 	document.getElementById('log_in_screen').style.display='none'
 	document.getElementById('settings_screen').style.display='none'
 
@@ -706,17 +711,26 @@ function _setDisplayedSettings(){
 	'<div style="margin-bottom:8px;"> up: '+_asciiToChar(settings.upKey)+'</div>'+
 	'<div style="margin-bottom:8px;"> Down: '+_asciiToChar(settings.downKey)+'</div>'+
 	'<div style="margin-bottom:8px;"> Right: '+_asciiToChar(settings.rightKey)+'</div>'
+	'<div style="margin-bottom:8px;"> 5 points food: '+settings.foodColor5+'</div>'+
+	'<div style="margin-bottom:8px;"> 15 points food: '+settings.foodColor15+'</div>'+
+	'<div style="margin-bottom:8px;"> 25 points food: '+settings.foodColor25+'</div>'+
+	'<div style="margin-bottom:8px;"> Game Time: '+settings.gameTime+'</div>'+
+	'<div style="margin-bottom:8px;"> Number of foods in game: '+settings.numberOfFoods+'</div>'+
 
 	// status='<div>aa</div>'
-	$('#status-div').html(status )
+	$('#status-div').html(status)
 	$('#status-div').css('font-family','sans-serif')
 	$('#status-div').css('text-align','center')
 }
 function startGame(){
 	_setScreen('game')
+	
+	$('#status-div-div').css('position','relative')
+	$('#status-div-div').css('top','100px')
+	$('#status-div-div').css('right','50px')
 }
 function _setUserIndex(username){
-	debugger
+
 	$('#userInfo').html(
 		'<i class="glyphicon glyphicon-user" style="margin-right: 15px;"></i>'+
 		username
